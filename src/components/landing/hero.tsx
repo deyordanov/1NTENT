@@ -1,12 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
 export function Hero() {
   const [isReturning, setIsReturning] = useState(false);
+  const [avatarSeed, setAvatarSeed] = useState("default");
+
+  useEffect(() => {
+    setAvatarSeed(String(Math.floor(Math.random() * 100000)));
+  }, []);
 
   useEffect(() => {
     const visited = localStorage.getItem("1ntent_visited");
@@ -101,15 +106,13 @@ export function Hero() {
         >
           <div className="flex items-center gap-3">
             <div className="flex -space-x-2">
-              {[
-                "bg-primary/70",
-                "bg-primary/50",
-                "bg-primary/30",
-                "bg-primary/20",
-              ].map((bg, i) => (
-                <div
+              {[1, 2, 3, 4].map((i) => (
+                <img
                   key={i}
-                  className={`h-7 w-7 rounded-full border-2 border-background ${bg}`}
+                  src={`https://i.pravatar.cc/56?u=${avatarSeed}-${i}`}
+                  alt=""
+                  className="h-8 w-8 rounded-full border-2 border-background object-cover"
+                  loading="lazy"
                 />
               ))}
             </div>

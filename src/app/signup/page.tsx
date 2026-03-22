@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -21,6 +21,26 @@ export default function SignupPage() {
     scores: Scores;
   } | null>(null);
   const emailRef = useRef<HTMLInputElement>(null);
+  const [timeLeft, setTimeLeft] = useState("");
+
+  // Countdown - results expire in ~15 minutes from page load
+  const expireTime = useMemo(() => Date.now() + 15 * 60 * 1000, []);
+
+  useEffect(() => {
+    function tick() {
+      const diff = expireTime - Date.now();
+      if (diff <= 0) {
+        setTimeLeft("0:00");
+        return;
+      }
+      const mins = Math.floor(diff / 60000);
+      const secs = Math.floor((diff % 60000) / 1000);
+      setTimeLeft(`${mins}:${secs.toString().padStart(2, "0")}`);
+    }
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, [expireTime]);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("testData");
@@ -163,8 +183,14 @@ export default function SignupPage() {
               </Button>
             </form>
 
+            {/* Urgency */}
+            <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground/70">
+              <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-primary/60" />
+              <span>Резултатите ти са запазени за <span className="font-medium text-foreground">{timeLeft}</span></span>
+            </div>
+
             {/* Trust signals */}
-            <div className="mt-4 flex items-center justify-center gap-4 text-xs text-muted-foreground/60">
+            <div className="mt-3 flex items-center justify-center gap-4 text-xs text-muted-foreground/60">
               <span>Без спам</span>
               <span className="h-3 w-px bg-border" />
               <span>Лични данни в безопасност</span>

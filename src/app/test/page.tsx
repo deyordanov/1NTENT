@@ -75,7 +75,38 @@ export default function TestPage() {
   const [selectedFlash, setSelectedFlash] = useState<number | null>(null);
   const [streak, setStreak] = useState(0);
   const [transitioning, setTransitioning] = useState(false);
+  const [showResume, setShowResume] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  // Restore saved progress
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("1ntent_test_progress");
+      if (saved) {
+        const { answers: savedAnswers, index } = JSON.parse(saved);
+        if (index > 0 && Object.keys(savedAnswers).length > 0) {
+          setShowResume(true);
+        }
+      }
+    } catch {}
+  }, []);
+
+  function handleResume() {
+    try {
+      const saved = localStorage.getItem("1ntent_test_progress");
+      if (saved) {
+        const { answers: savedAnswers, index } = JSON.parse(saved);
+        setAnswers(savedAnswers);
+        setCurrentIndex(index);
+      }
+    } catch {}
+    setShowResume(false);
+  }
+
+  function handleStartFresh() {
+    localStorage.removeItem("1ntent_test_progress");
+    setShowResume(false);
+  }
 
   useEffect(() => {
     cardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -134,8 +165,15 @@ export default function TestPage() {
         "testData",
         JSON.stringify({ answers: updated, scores })
       );
+      localStorage.removeItem("1ntent_test_progress");
       setTimeout(() => router.push("/signup"), 600);
     } else {
+      // Save progress
+      const nextIndex = currentIndex + 1;
+      localStorage.setItem(
+        "1ntent_test_progress",
+        JSON.stringify({ answers: updated, index: nextIndex })
+      );
       setTimeout(() => {
         setDirection(1);
         setCurrentIndex((prev) => prev + 1);
@@ -170,6 +208,40 @@ export default function TestPage() {
     }
 
     return `Въпрос ${currentIndex + 1} от ${questions.length}`;
+  }
+
+  if (showResume) {
+    return (
+      <main className="flex min-h-screen items-center justify-center px-4">
+        <motion.div
+          className="w-full max-w-sm rounded-2xl border border-border/60 bg-card p-8 text-center shadow-sm"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <h2 className="font-serif text-xl font-semibold">
+            Имаш незавършен тест
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Искаш ли да продължиш откъдето спря?
+          </p>
+          <div className="mt-6 flex flex-col gap-2">
+            <button
+              onClick={handleResume}
+              className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90"
+            >
+              Продължи
+            </button>
+            <button
+              onClick={handleStartFresh}
+              className="py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Започни отначало
+            </button>
+          </div>
+        </motion.div>
+      </main>
+    );
   }
 
   return (

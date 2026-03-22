@@ -10,6 +10,8 @@ import { GrainOverlay } from "@/components/landing/grain-overlay";
 import { CursorHearts } from "@/components/cursor-hearts";
 import { MobileStickyCTA } from "@/components/landing/mobile-sticky-cta";
 import { ExitIntent } from "@/components/landing/exit-intent";
+import { LiveActivity } from "@/components/landing/live-activity";
+import { SuccessStory } from "@/components/landing/success-story";
 
 export default function Home() {
   return (
@@ -17,6 +19,7 @@ export default function Home() {
       <CursorHearts />
       <MobileStickyCTA />
       <ExitIntent />
+      <LiveActivity />
       <GrainOverlay />
       <Navbar />
       <main>
@@ -24,6 +27,7 @@ export default function Home() {
         <Journey />
         <Statement />
         <TypingTestimonial />
+        <SuccessStory />
         <CalculatorCTA />
         <CTAFooter />
       </main>
