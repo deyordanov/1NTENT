@@ -3,12 +3,33 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 
-function ProfileSilhouette() {
-  // Standard user icon silhouette — like the ones used in contact lists / avatars
+function ProfileSilhouette({ id }: { id: string }) {
+  const gradientId = `profile-grad-${id}`;
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className="h-28 w-28 sm:h-36 sm:w-36" opacity="0.28">
-      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-    </svg>
+    <div className="relative flex items-center justify-center">
+      {/* Soft glow circle behind */}
+      <div
+        className="absolute h-32 w-32 rounded-full sm:h-40 sm:w-40"
+        style={{
+          background: "radial-gradient(circle, hsla(346, 77%, 50%, 0.08) 0%, transparent 70%)",
+        }}
+      />
+      {/* Border circle */}
+      <div className="relative flex h-28 w-28 items-center justify-center rounded-full border-2 border-primary/15 bg-primary/[0.03] sm:h-36 sm:w-36">
+        <svg viewBox="0 0 24 24" className="h-16 w-16 sm:h-20 sm:w-20">
+          <defs>
+            <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="hsl(346, 77%, 50%)" stopOpacity="0.5" />
+              <stop offset="100%" stopColor="hsl(346, 60%, 75%)" stopOpacity="0.3" />
+            </linearGradient>
+          </defs>
+          <path
+            d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+            fill={`url(#${gradientId})`}
+          />
+        </svg>
+      </div>
+    </div>
   );
 }
 
@@ -27,7 +48,7 @@ export function ConnectionAnimation() {
             animate={isInView ? { x: 0, opacity: 1 } : {}}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
-            <ProfileSilhouette />
+            <ProfileSilhouette id="left" />
           </motion.div>
 
           {/* Connection area */}
@@ -92,7 +113,7 @@ export function ConnectionAnimation() {
             animate={isInView ? { x: 0, opacity: 1 } : {}}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
-            <ProfileSilhouette />
+            <ProfileSilhouette id="right" />
           </motion.div>
         </div>
 
