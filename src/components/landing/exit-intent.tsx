@@ -62,10 +62,10 @@ export function ExitIntent() {
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="font-serif text-xl font-semibold">
-              Преди да тръгнеш...
+              Всеки ден е ден, в който можеше да срещнеш правилния човек.
             </h3>
             <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
-              10 въпроса. Под 3 минути. Без регистрация.
+              127 души вече попълниха теста. 10 въпроса, под 3 минути, без регистрация.
             </p>
             <div className="mt-6 flex flex-col gap-2">
               <Link href="/test" onClick={dismiss}>
