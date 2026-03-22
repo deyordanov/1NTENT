@@ -8,7 +8,7 @@ const faqs = [
   {
     question: "How does the personality test work?",
     answer:
-      "It\u2019s based on the Big Five model\u2014the most validated framework in psychology. Fifteen questions, five dimensions: how open you are, how you organize your life, your social energy, your empathy style, and your emotional patterns. Takes about 3 minutes.",
+      "Five quick questions based on the Big Five personality model\u2014the gold standard in psychology. Each one maps a core dimension of who you are: openness, discipline, social energy, empathy, and emotional patterns. Takes under two minutes.",
   },
   {
     question: "Is this a dating app?",

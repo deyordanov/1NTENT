@@ -61,7 +61,7 @@ export function Hero() {
             </motion.div>
           </Link>
           <span className="text-sm text-muted-foreground">
-            Free &middot; 15 questions
+            Free &middot; 5 questions &middot; under 2 min
           </span>
         </motion.div>
 

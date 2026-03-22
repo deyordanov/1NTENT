@@ -25,7 +25,7 @@ export function CTAFooter() {
           className="mt-10"
         >
           <p className="mx-auto mb-8 max-w-md text-lg text-muted-foreground">
-            Three minutes. Fifteen questions.
+            Five questions. Under two minutes.
             <br />
             One introduction that actually matters.
           </p>
