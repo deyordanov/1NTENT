@@ -40,11 +40,15 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap"
           rel="stylesheet"
         />
-        {/* Plausible Analytics — change data-domain when you have a custom domain */}
+        {/* Plausible Analytics */}
         <script
-          defer
-          data-domain="1ntent.vercel.app"
-          src="https://plausible.io/js/script.js"
+          async
+          src="https://plausible.io/js/pa-prdw7niarsWGpBXuFH-mM.js"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init();`,
+          }}
         />
       </head>
       <body className="min-h-screen antialiased font-sans">
