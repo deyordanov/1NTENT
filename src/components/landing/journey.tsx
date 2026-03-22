@@ -35,7 +35,7 @@ export function Journey() {
       <div className="mx-auto max-w-2xl px-6">
         <FadeInUp>
           <h2 className="mb-14 font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
-            Как работи
+            Процесът
           </h2>
         </FadeInUp>
 

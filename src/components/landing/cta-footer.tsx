@@ -11,7 +11,7 @@ export function CTAFooter() {
       <div className="mx-auto max-w-4xl px-6 text-center">
         <TextReveal>
           <h2 className="font-serif text-4xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
-            Готов/а да срещнеш някой,
+            Искаш ли да срещнеш някой,
             <br />
             който <span className="italic text-primary">те разбира</span>?
           </h2>

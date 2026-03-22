@@ -14,7 +14,7 @@ export function CalculatorTeaser() {
           </h2>
           <p className="mt-3 text-muted-foreground">
             Повечето професионалисти не осъзнават колко време и пари отиват
-            в безцелно свайпване. Разбери.
+            в дейтинг приложения. Разбери.
           </p>
         </FadeInUp>
 

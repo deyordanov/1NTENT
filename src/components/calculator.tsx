@@ -36,16 +36,16 @@ function AnimatedNumber({
 
 function getComparison(annualCost: number): string {
   if (annualCost >= 100000)
-    return "Това е първоначална вноска за жилище \u2014 отишла в свайпване.";
+    return "Това е първоначална вноска за жилище \u2014 отишла в безцелни запознанства.";
   if (annualCost >= 50000)
     return "Това е луксозна кола. Похарчена за хора, които никога няма да срещнеш.";
   if (annualCost >= 20000)
     return "Това е година обучение. Инвестирана в безсмислени разговори.";
   if (annualCost >= 10000)
-    return `Това са ${Math.round(annualCost / 2500)} международни пътувания \u2014 пропилени в празни чатове.`;
+    return `Това са ${Math.round(annualCost / 2500)} международни пътувания \u2014 пропилени в празни разговори.`;
   if (annualCost >= 5000)
     return `Това са ${Math.round(annualCost / 1200)} уикенд почивки, които не взе.`;
-  return `Това са ${Math.round(annualCost / 150)} страхотни вечери навън \u2014 заменени с безцелно скролване.`;
+  return `Това са ${Math.round(annualCost / 150)} страхотни вечери навън \u2014 заменени с палеца ти по екрана.`;
 }
 
 function getHoursComparison(annualHours: number): string {
@@ -55,7 +55,7 @@ function getHoursComparison(annualHours: number): string {
   if (workDays >= 15)
     return `${workDays} пълни работни дни \u2014 три седмици, които никога няма да върнеш.`;
   if (workDays >= 5)
-    return `${workDays} пълни работни дни, загубени в безцелно свайпване.`;
+    return `${workDays} пълни работни дни, загубени в дейтинг приложения.`;
   return `${annualHours} часа, които можеха да отидат за нещо истинско.`;
 }
 
@@ -74,10 +74,10 @@ export function Calculator({ compact = false }: { compact?: boolean }) {
         <div>
           <div className="mb-3 flex items-baseline justify-between">
             <label className="text-sm font-medium text-muted-foreground">
-              Твоята часова ставка
+              Колко печелиш на час
             </label>
             <span className="font-serif text-2xl font-semibold">
-              ${hourlyRate}
+              €{hourlyRate}
             </span>
           </div>
           <input
@@ -90,8 +90,8 @@ export function Calculator({ compact = false }: { compact?: boolean }) {
             className="w-full cursor-pointer accent-primary"
           />
           <div className="mt-1 flex justify-between text-xs text-muted-foreground/60">
-            <span>$25</span>
-            <span>$500+</span>
+            <span>€25</span>
+            <span>€500+</span>
           </div>
         </div>
 
@@ -133,7 +133,7 @@ export function Calculator({ compact = false }: { compact?: boolean }) {
             </p>
             <AnimatedNumber
               value={annualCost}
-              prefix="$"
+              prefix="€"
               className="block font-serif text-5xl font-semibold text-primary sm:text-6xl"
             />
             <p className="mt-1 text-sm text-muted-foreground">
@@ -152,7 +152,7 @@ export function Calculator({ compact = false }: { compact?: boolean }) {
               </p>
               <AnimatedNumber
                 value={annualCost}
-                prefix="$"
+                prefix="€"
                 className="block font-serif text-4xl font-semibold text-primary sm:text-5xl"
               />
               <p className="mt-3 text-muted-foreground">
@@ -167,7 +167,7 @@ export function Calculator({ compact = false }: { compact?: boolean }) {
                 </p>
                 <AnimatedNumber
                   value={monthlyCost}
-                  prefix="$"
+                  prefix="€"
                   className="mt-1 block font-serif text-2xl font-semibold"
                 />
               </div>
@@ -218,7 +218,7 @@ export function Calculator({ compact = false }: { compact?: boolean }) {
             </motion.div>
           </Link>
           <p className="mt-3 text-xs text-muted-foreground/60">
-            5 въпроса. Под 2 минути. Без повече свайпване.
+            5 въпроса. Под 2 минути. Без повече безцелни срещи.
           </p>
         </div>
       </motion.div>
