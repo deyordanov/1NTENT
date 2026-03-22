@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { FadeInUp } from "@/components/motion";
 
 const steps = [
   {
@@ -25,90 +26,101 @@ export function Journey() {
   const [active, setActive] = useState<number | null>(null);
 
   return (
-    <section className="py-16 sm:py-20">
-      <div className="mx-auto max-w-xl px-6">
-        <div className="relative pl-10 sm:pl-14">
-          {/* Vertical line — spans from first dot center to last dot center */}
-          <div
-            className="absolute left-[11px] top-[11px] bottom-[11px] w-[2px] rounded-full sm:left-[15px] sm:top-[15px] sm:bottom-[15px]"
-            style={{
-              background:
-                "linear-gradient(to bottom, hsl(346, 77%, 50%) 0%, hsl(346, 60%, 75%) 50%, hsl(30, 15%, 88%) 100%)",
-            }}
-          />
+    <section className="py-24 sm:py-32">
+      <div className="mx-auto max-w-2xl px-6">
+        {/* Section title */}
+        <FadeInUp>
+          <h2 className="mb-16 font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
+            How it works
+          </h2>
+        </FadeInUp>
 
-          <div className="space-y-8 sm:space-y-10">
-            {steps.map((step, i) => {
-              const isActive = active === i;
-              return (
-                <div
-                  key={i}
-                  className="group relative cursor-pointer"
-                  onMouseEnter={() => setActive(i)}
-                  onMouseLeave={() => setActive(null)}
-                  onClick={() => setActive(isActive ? null : i)}
-                >
-                  {/* Dot on the timeline — sits above the line */}
-                  <motion.div
-                    className="absolute -left-10 top-1.5 z-10 flex h-[22px] w-[22px] items-center justify-center rounded-full border-2 sm:-left-14 sm:h-[30px] sm:w-[30px]"
-                    animate={{
-                      borderColor: isActive
-                        ? "hsl(346, 77%, 50%)"
-                        : "hsl(30, 15%, 88%)",
-                      backgroundColor: isActive
-                        ? "hsl(346, 77%, 50%)"
-                        : "hsl(30, 25%, 98%)",
-                    }}
-                    transition={{ duration: 0.25 }}
+        <FadeInUp delay={0.1}>
+          <div className="relative pl-12 sm:pl-16">
+            {/* Vertical line */}
+            <div
+              className="absolute left-[15px] top-[15px] bottom-[15px] w-[2px] rounded-full sm:left-[19px]"
+              style={{
+                background:
+                  "linear-gradient(to bottom, hsl(346, 77%, 50%), hsl(346, 60%, 75%) 60%, hsl(30, 15%, 90%))",
+              }}
+            />
+
+            <div className="space-y-0">
+              {steps.map((step, i) => {
+                const isActive = active === i;
+                return (
+                  <div
+                    key={i}
+                    className="group relative cursor-pointer py-5 transition-colors"
+                    onMouseEnter={() => setActive(i)}
+                    onMouseLeave={() => setActive(null)}
+                    onClick={() => setActive(isActive ? null : i)}
                   >
-                    <motion.span
-                      className="text-[10px] font-semibold sm:text-xs"
+                    {/* Dot — solid bg to sit above the line */}
+                    <motion.div
+                      className="absolute -left-12 top-[23px] z-10 flex h-[30px] w-[30px] items-center justify-center rounded-full sm:-left-16 sm:h-[38px] sm:w-[38px]"
                       animate={{
-                        color: isActive
-                          ? "hsl(0, 0%, 100%)"
-                          : "hsl(20, 10%, 55%)",
+                        backgroundColor: isActive
+                          ? "hsl(346, 77%, 50%)"
+                          : "hsl(30, 25%, 98%)",
+                        boxShadow: isActive
+                          ? "0 0 0 4px hsla(346, 77%, 50%, 0.15)"
+                          : "0 0 0 2px hsl(30, 15%, 88%)",
                       }}
                       transition={{ duration: 0.25 }}
                     >
-                      {i + 1}
-                    </motion.span>
-                  </motion.div>
-
-                  {/* Title */}
-                  <motion.h3
-                    className="font-serif text-xl font-semibold sm:text-2xl"
-                    animate={{
-                      color: isActive
-                        ? "hsl(20, 20%, 14%)"
-                        : "hsl(20, 10%, 44%)",
-                    }}
-                    transition={{ duration: 0.25 }}
-                  >
-                    {step.title}
-                  </motion.h3>
-
-                  {/* Description — revealed on hover */}
-                  <AnimatePresence>
-                    {isActive && (
-                      <motion.p
-                        className="mt-3 max-w-md leading-relaxed text-muted-foreground"
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{
-                          duration: 0.3,
-                          ease: [0.22, 1, 0.36, 1],
+                      <motion.span
+                        className="text-xs font-semibold sm:text-sm"
+                        animate={{
+                          color: isActive
+                            ? "hsl(0, 0%, 100%)"
+                            : "hsl(20, 10%, 55%)",
                         }}
+                        transition={{ duration: 0.25 }}
                       >
-                        {step.description}
-                      </motion.p>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
+                        {i + 1}
+                      </motion.span>
+                    </motion.div>
+
+                    {/* Title */}
+                    <motion.h3
+                      className="font-serif text-xl font-semibold sm:text-2xl"
+                      animate={{
+                        color: isActive
+                          ? "hsl(20, 20%, 14%)"
+                          : "hsl(20, 10%, 50%)",
+                      }}
+                      transition={{ duration: 0.25 }}
+                    >
+                      {step.title}
+                    </motion.h3>
+
+                    {/* Description — revealed on hover/click */}
+                    <AnimatePresence>
+                      {isActive && (
+                        <motion.div
+                          className="overflow-hidden"
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{
+                            duration: 0.3,
+                            ease: [0.22, 1, 0.36, 1],
+                          }}
+                        >
+                          <p className="mt-2 max-w-md leading-relaxed text-muted-foreground">
+                            {step.description}
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        </FadeInUp>
       </div>
     </section>
   );

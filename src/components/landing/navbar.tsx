@@ -25,7 +25,7 @@ export function Navbar() {
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
         <Link
           href="/"
-          className="font-serif text-lg font-medium tracking-tight"
+          className="text-lg"
         >
           <Logo />
         </Link>

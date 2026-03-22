@@ -78,30 +78,24 @@ function FaqItem({
 export function FAQ() {
   return (
     <section className="py-24 sm:py-32">
-      <div className="mx-auto max-w-5xl px-6">
+      <div className="mx-auto max-w-2xl px-6">
         <FadeInUp>
-          <div className="flex flex-col gap-12 sm:flex-row sm:gap-20">
-            {/* Left — heading */}
-            <div className="sm:w-2/5">
-              <h2 className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
-                Questions?
-                <br />
-                <span className="text-muted-foreground">
-                  We&apos;ve got answers.
-                </span>
-              </h2>
-            </div>
-
-            {/* Right — accordion */}
-            <div className="flex-1">
-              {faqs.map((faq, i) => (
-                <FaqItem
-                  key={i}
-                  question={faq.question}
-                  answer={faq.answer}
-                />
-              ))}
-            </div>
+          <h2 className="mb-10 font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
+            Questions?{" "}
+            <span className="text-muted-foreground">
+              We&apos;ve got answers.
+            </span>
+          </h2>
+        </FadeInUp>
+        <FadeInUp delay={0.1}>
+          <div>
+            {faqs.map((faq, i) => (
+              <FaqItem
+                key={i}
+                question={faq.question}
+                answer={faq.answer}
+              />
+            ))}
           </div>
         </FadeInUp>
       </div>
