@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "1NTENT - Personality-Based Matchmaking",
+  title: "1NTENT - Мачмейкинг, базиран на личността",
   description:
-    "We match you with the right person based on who you actually are. Take a short personality test and we\u2019ll find someone who truly complements you.",
+    "Свързваме те с правилния човек, базирайки се на това кой наистина си. Попълни кратък тест за личността и ние ще намерим някой, който наистина те допълва.",
 };
 
 export default function RootLayout({
@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="bg">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link

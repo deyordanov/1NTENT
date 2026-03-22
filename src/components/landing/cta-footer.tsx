@@ -11,9 +11,9 @@ export function CTAFooter() {
       <div className="mx-auto max-w-4xl px-6 text-center">
         <TextReveal>
           <h2 className="font-serif text-4xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
-            Ready to meet someone
+            Готов/а да срещнеш някой,
             <br />
-            who <span className="italic text-primary">gets it</span>?
+            който <span className="italic text-primary">те разбира</span>?
           </h2>
         </TextReveal>
 
@@ -25,9 +25,9 @@ export function CTAFooter() {
           className="mt-10"
         >
           <p className="mx-auto mb-8 max-w-md text-lg text-muted-foreground">
-            Five questions. Under two minutes.
+            Пет въпроса. Под две минути.
             <br />
-            One introduction that actually matters.
+            Едно запознанство, което наистина има значение.
           </p>
           <Link href="/test">
             <motion.div
@@ -39,7 +39,7 @@ export function CTAFooter() {
                 size="lg"
                 className="rounded-full px-8 py-6 text-base shadow-lg shadow-primary/20"
               >
-                Begin your assessment
+                Започни теста
               </Button>
             </motion.div>
           </Link>

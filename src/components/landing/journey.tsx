@@ -6,24 +6,24 @@ import { FadeInUp } from "@/components/motion";
 
 const steps = [
   {
-    title: "Take the test & book a call",
+    title: "Попълни теста и запази час",
     description:
-      "Complete a short personality assessment and leave your email. If you\u2019re interested, book an introductory call so we can learn more about what you\u2019re looking for.",
+      "Отговори на кратък тест за личността и остави имейла си. Ако имаш интерес, запази въвеждащ разговор, за да научим повече за това какво търсиш.",
   },
   {
-    title: "We create your profile",
+    title: "Създаваме профила ти",
     description:
-      "Once accepted into the program, we build a detailed dating profile around your personality, values, and what matters most to you in a partner.",
+      "След като бъдеш приет/а в програмата, изграждаме подробен профил около твоята личност, ценности и какво е най-важно за теб в партньор.",
   },
   {
-    title: "Review your matches",
+    title: "Разгледай съвпаденията си",
     description:
-      "We propose compatible matches based on your profile. You choose who interests you, and they\u2019ll get the chance to respond.",
+      "Предлагаме ти съвместими кандидати на базата на профила ти. Ти избираш кой те интересува, а те ще имат възможност да отговорят.",
   },
   {
-    title: "We set up the date",
+    title: "Ние организираме срещата",
     description:
-      "When there\u2019s mutual interest, we handle the logistics\u2014time, place, everything. You just show up and be yourself.",
+      "При взаимен интерес ние се грижим за логистиката \u2014 време, място, всичко. Ти просто се появяваш и си ти.",
   },
 ];
 
@@ -35,7 +35,7 @@ export function Journey() {
       <div className="mx-auto max-w-2xl px-6">
         <FadeInUp>
           <h2 className="mb-14 font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
-            How it works
+            Как работи
           </h2>
         </FadeInUp>
 

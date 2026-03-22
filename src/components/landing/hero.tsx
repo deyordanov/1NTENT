@@ -14,7 +14,7 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
         >
-          Personality-based matchmaking
+          Мачмейкинг, базиран на личността
         </motion.p>
 
         <motion.h1
@@ -23,11 +23,11 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
-          <span className="font-light">We find the person</span>
+          <span className="font-light">Намираме човека,</span>
           <br />
           <span className="font-semibold">
-            who{" "}
-            <span className="italic text-primary">fits you.</span>
+            който{" "}
+            <span className="italic text-primary">ти подхожда.</span>
           </span>
         </motion.h1>
 
@@ -37,8 +37,8 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
         >
-          Take a short personality test and we&apos;ll match you with someone
-          who truly complements how you think, feel, and connect.
+          Попълни кратък тест за личността и ние ще те свържем с някой,
+          който наистина допълва начина ти на мислене, чувства и общуване.
         </motion.p>
 
         <motion.div
@@ -56,12 +56,12 @@ export function Hero() {
                 size="lg"
                 className="rounded-full px-7 py-6 text-base shadow-lg shadow-primary/20"
               >
-                Take the test
+                Попълни теста
               </Button>
             </motion.div>
           </Link>
           <span className="text-sm text-muted-foreground">
-            Free &middot; 5 questions &middot; under 2 min
+            Безплатно &middot; 5 въпроса &middot; под 2 мин
           </span>
         </motion.div>
 

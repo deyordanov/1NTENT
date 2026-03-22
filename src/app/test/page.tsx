@@ -14,11 +14,11 @@ import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/logo";
 
 const scaleLabels = [
-  "Strongly Disagree",
-  "Disagree",
-  "Neutral",
-  "Agree",
-  "Strongly Agree",
+  "Напълно несъгласен/на",
+  "Несъгласен/на",
+  "Неутрално",
+  "Съгласен/на",
+  "Напълно съгласен/на",
 ];
 
 export default function TestPage() {
@@ -73,7 +73,7 @@ export default function TestPage() {
         <div className="mb-8">
           <div className="mb-2 flex justify-between text-sm text-muted-foreground">
             <span>
-              Question {currentIndex + 1} of {questions.length}
+              Въпрос {currentIndex + 1} от {questions.length}
             </span>
             <span>{Math.round(progress)}%</span>
           </div>
@@ -129,14 +129,14 @@ export default function TestPage() {
               disabled={currentIndex === 0}
               className="rounded-full"
             >
-              Back
+              Назад
             </Button>
             <Button
               onClick={handleNext}
               disabled={currentAnswer === undefined}
               className="rounded-full px-6"
             >
-              {currentIndex < questions.length - 1 ? "Next" : "Finish"}
+              {currentIndex < questions.length - 1 ? "Напред" : "Готово"}
             </Button>
           </div>
         </div>

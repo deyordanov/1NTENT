@@ -52,19 +52,19 @@ export default function ConfirmationPage() {
           </motion.div>
 
           <h1 className="font-serif text-2xl font-semibold">
-            You&apos;re all set
+            Всичко е готово
           </h1>
           <p className="mt-4 leading-relaxed text-muted-foreground">
-            Thank you for completing the assessment. A member of our team will
-            review your profile and reach out personally within a few days.
+            Благодарим ти, че попълни теста. Член от нашия екип ще прегледа
+            профила ти и ще се свърже лично с теб в рамките на няколко дни.
           </p>
           <p className="mt-3 text-sm text-muted-foreground">
-            In the meantime, feel free to share 1NTENT with friends who
-            might be interested.
+            Междувременно, не се колебай да споделиш 1NTENT с приятели,
+            които може да се заинтересуват.
           </p>
           <Link href="/">
             <Button variant="outline" className="mt-6 rounded-full">
-              Back to Home
+              Към началната страница
             </Button>
           </Link>
         </div>

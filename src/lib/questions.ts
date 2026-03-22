@@ -3,27 +3,27 @@ import { Question } from "@/types";
 export const questions: Question[] = [
   {
     id: "o1",
-    text: "I enjoy trying new and unfamiliar experiences.",
+    text: "Обичам да опитвам нови и непознати преживявания.",
     dimension: "openness",
   },
   {
     id: "c1",
-    text: "I follow through on my commitments and plans.",
+    text: "Изпълнявам ангажиментите и плановете си.",
     dimension: "conscientiousness",
   },
   {
     id: "e1",
-    text: "I feel energized when I'm around other people.",
+    text: "Чувствам се зареден/а, когато съм сред хора.",
     dimension: "extraversion",
   },
   {
     id: "a1",
-    text: "I genuinely care about other people's well-being.",
+    text: "Истински ми пука за благополучието на другите хора.",
     dimension: "agreeableness",
   },
   {
     id: "n1",
-    text: "I often worry about things that might go wrong.",
+    text: "Често се тревожа за неща, които могат да се объркат.",
     dimension: "neuroticism",
   },
 ];

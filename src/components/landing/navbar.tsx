@@ -33,7 +33,7 @@ export function Navbar() {
           href="/test"
           className="text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
-          Take the test &rarr;
+          Попълни теста &rarr;
         </Link>
       </div>
     </motion.nav>

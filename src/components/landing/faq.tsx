@@ -6,29 +6,29 @@ import { FadeInUp } from "@/components/motion";
 
 const faqs = [
   {
-    question: "How does the personality test work?",
+    question: "Как работи тестът за личността?",
     answer:
-      "Five quick questions based on the Big Five personality model\u2014the gold standard in psychology. Each one maps a core dimension of who you are: openness, discipline, social energy, empathy, and emotional patterns. Takes under two minutes.",
+      "Пет кратки въпроса, базирани на модела Big Five \u2014 златният стандарт в психологията. Всеки от тях измерва ключово измерение на личността ти: откритост, дисциплина, социална енергия, емпатия и емоционални модели. Отнема под две минути.",
   },
   {
-    question: "Is this a dating app?",
+    question: "Това дейтинг приложение ли е?",
     answer:
-      "No swiping, no endless scrolling. We\u2019re a curated service. We personally review every profile and only make introductions we genuinely believe in. Think of it as having a very thoughtful friend with a psychology degree.",
+      "Без свайпване, без безкрайно скролване. Ние сме подбрана услуга. Лично преглеждаме всеки профил и правим запознанства само когато наистина вярваме в съвместимостта. Мисли за нас като за много внимателен приятел с диплома по психология.",
   },
   {
-    question: "What does it cost?",
+    question: "Колко струва?",
     answer:
-      "The test and sign-up are free. We\u2019ll reach out to discuss our process and any costs before making introductions.",
+      "Тестът и регистрацията са безплатни. Ще се свържем с теб, за да обсъдим процеса и евентуалните разходи, преди да правим запознанства.",
   },
   {
-    question: "How is my data handled?",
+    question: "Как се обработват данните ми?",
     answer:
-      "Securely stored, never sold, never shared with third parties. Used only for matching. You can request deletion anytime.",
+      "Съхранявани сигурно, никога не се продават, никога не се споделят с трети страни. Използват се само за мачмейкинг. Можеш да поискаш изтриване по всяко време.",
   },
   {
-    question: "What happens after I sign up?",
+    question: "Какво се случва, след като се регистрирам?",
     answer:
-      "Someone from our team personally reviews your profile and reaches out within a few days. No bots, no auto-emails\u2014a real conversation.",
+      "Някой от нашия екип лично преглежда профила ти и се свързва с теб в рамките на няколко дни. Без ботове, без автоматични имейли \u2014 истински разговор.",
   },
 ];
 
@@ -81,9 +81,9 @@ export function FAQ() {
       <div className="mx-auto max-w-2xl px-6">
         <FadeInUp>
           <h2 className="mb-10 font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
-            Questions?{" "}
+            Въпроси?{" "}
             <span className="text-muted-foreground">
-              We&apos;ve got answers.
+              Имаме отговори.
             </span>
           </h2>
         </FadeInUp>

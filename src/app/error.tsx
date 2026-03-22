@@ -10,12 +10,12 @@ export default function Error({
 }) {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center px-4">
-      <h1 className="mb-4 text-4xl font-bold">Something went wrong</h1>
+      <h1 className="mb-4 text-4xl font-bold">Нещо се обърка</h1>
       <p className="mb-6 text-muted-foreground">
-        An unexpected error occurred.
+        Възникна неочаквана грешка.
       </p>
       <Button onClick={reset} variant="outline">
-        Try Again
+        Опитай отново
       </Button>
     </main>
   );

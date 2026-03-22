@@ -36,27 +36,27 @@ function AnimatedNumber({
 
 function getComparison(annualCost: number): string {
   if (annualCost >= 100000)
-    return `That\u2019s a down payment on a house \u2014 gone to swiping.`;
+    return "Това е първоначална вноска за жилище \u2014 отишла в свайпване.";
   if (annualCost >= 50000)
-    return `That\u2019s a luxury car. Spent on people you\u2019ll never meet.`;
+    return "Това е луксозна кола. Похарчена за хора, които никога няма да срещнеш.";
   if (annualCost >= 20000)
-    return `That\u2019s a year of tuition. Invested in dead-end conversations.`;
+    return "Това е година обучение. Инвестирана в безсмислени разговори.";
   if (annualCost >= 10000)
-    return `That\u2019s ${Math.round(annualCost / 2500)} international trips \u2014 wasted on small talk.`;
+    return `Това са ${Math.round(annualCost / 2500)} международни пътувания \u2014 пропилени в празни чатове.`;
   if (annualCost >= 5000)
-    return `That\u2019s ${Math.round(annualCost / 1200)} weekend getaways you didn\u2019t take.`;
-  return `That\u2019s ${Math.round(annualCost / 150)} great nights out \u2014 replaced by thumb fatigue.`;
+    return `Това са ${Math.round(annualCost / 1200)} уикенд почивки, които не взе.`;
+  return `Това са ${Math.round(annualCost / 150)} страхотни вечери навън \u2014 заменени с безцелно скролване.`;
 }
 
 function getHoursComparison(annualHours: number): string {
   const workDays = Math.round(annualHours / 8);
   if (workDays >= 30)
-    return `${workDays} work days. That\u2019s over a month of your life \u2014 every single year.`;
+    return `${workDays} работни дни. Това е над месец от живота ти \u2014 всяка година.`;
   if (workDays >= 15)
-    return `${workDays} full work days \u2014 three weeks you\u2019ll never get back.`;
+    return `${workDays} пълни работни дни \u2014 три седмици, които никога няма да върнеш.`;
   if (workDays >= 5)
-    return `${workDays} full work days lost to aimless swiping.`;
-  return `${annualHours} hours that could have gone toward something real.`;
+    return `${workDays} пълни работни дни, загубени в безцелно свайпване.`;
+  return `${annualHours} часа, които можеха да отидат за нещо истинско.`;
 }
 
 export function Calculator({ compact = false }: { compact?: boolean }) {
@@ -71,11 +71,10 @@ export function Calculator({ compact = false }: { compact?: boolean }) {
     <div>
       {/* Inputs */}
       <div className="space-y-8">
-        {/* Hourly rate */}
         <div>
           <div className="mb-3 flex items-baseline justify-between">
             <label className="text-sm font-medium text-muted-foreground">
-              Your hourly rate
+              Твоята часова ставка
             </label>
             <span className="font-serif text-2xl font-semibold">
               ${hourlyRate}
@@ -96,14 +95,13 @@ export function Calculator({ compact = false }: { compact?: boolean }) {
           </div>
         </div>
 
-        {/* Hours per week */}
         <div>
           <div className="mb-3 flex items-baseline justify-between">
             <label className="text-sm font-medium text-muted-foreground">
-              Hours per week on dating apps
+              Часове седмично в дейтинг приложения
             </label>
             <span className="font-serif text-2xl font-semibold">
-              {hoursPerWeek}h
+              {hoursPerWeek}ч
             </span>
           </div>
           <input
@@ -116,13 +114,12 @@ export function Calculator({ compact = false }: { compact?: boolean }) {
             className="w-full cursor-pointer accent-primary"
           />
           <div className="mt-1 flex justify-between text-xs text-muted-foreground/60">
-            <span>1h</span>
-            <span>30h</span>
+            <span>1ч</span>
+            <span>30ч</span>
           </div>
         </div>
       </div>
 
-      {/* Results */}
       <motion.div
         className="mt-10"
         initial={{ opacity: 0, y: 16 }}
@@ -130,10 +127,9 @@ export function Calculator({ compact = false }: { compact?: boolean }) {
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       >
         {compact ? (
-          /* Compact: one big number + push */
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
-              You&apos;re losing roughly
+              Губиш приблизително
             </p>
             <AnimatedNumber
               value={annualCost}
@@ -141,19 +137,18 @@ export function Calculator({ compact = false }: { compact?: boolean }) {
               className="block font-serif text-5xl font-semibold text-primary sm:text-6xl"
             />
             <p className="mt-1 text-sm text-muted-foreground">
-              per year on dating that goes nowhere
+              годишно за запознанства, които не водят до нищо
             </p>
             <p className="mt-4 text-sm text-muted-foreground/80">
-              What if one test could replace all of it with a single,
-              meaningful introduction?
+              Ами ако един тест замени всичко това с едно единствено,
+              смислено запознанство?
             </p>
           </div>
         ) : (
-          /* Full: all stats */
           <div>
             <div className="rounded-2xl border border-border/60 bg-card p-6 sm:p-8">
               <p className="mb-1 text-xs font-medium uppercase tracking-widest text-muted-foreground">
-                Your annual romantic opportunity cost
+                Годишна цена на случайното запознанство
               </p>
               <AnimatedNumber
                 value={annualCost}
@@ -168,7 +163,7 @@ export function Calculator({ compact = false }: { compact?: boolean }) {
             <div className="mt-4 grid grid-cols-2 gap-4">
               <div className="rounded-xl border border-border/40 bg-card p-5">
                 <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-                  Monthly cost
+                  Месечна цена
                 </p>
                 <AnimatedNumber
                   value={monthlyCost}
@@ -178,7 +173,7 @@ export function Calculator({ compact = false }: { compact?: boolean }) {
               </div>
               <div className="rounded-xl border border-border/40 bg-card p-5">
                 <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-                  Hours per year
+                  Часове годишно
                 </p>
                 <AnimatedNumber
                   value={annualHours}
@@ -193,21 +188,20 @@ export function Calculator({ compact = false }: { compact?: boolean }) {
 
             <div className="mt-6 rounded-xl bg-primary/[0.04] p-5 text-center">
               <p className="text-sm leading-relaxed text-muted-foreground">
-                We replace all of that with{" "}
+                Ние заменяме всичко това с{" "}
                 <span className="font-medium text-foreground">
-                  one personality test
+                  един тест за личността
                 </span>{" "}
-                and{" "}
+                и{" "}
                 <span className="font-medium text-foreground">
-                  one curated introduction
+                  едно подбрано запознанство
                 </span>{" "}
-                to someone who actually fits.
+                с някой, който наистина ти подхожда.
               </p>
             </div>
           </div>
         )}
 
-        {/* CTA */}
         <div className="mt-8 text-center">
           <Link href="/test">
             <motion.div
@@ -219,12 +213,12 @@ export function Calculator({ compact = false }: { compact?: boolean }) {
                 size="lg"
                 className="rounded-full px-7 py-6 text-base shadow-lg shadow-primary/20"
               >
-                Take the test instead &rarr;
+                Попълни теста &rarr;
               </Button>
             </motion.div>
           </Link>
           <p className="mt-3 text-xs text-muted-foreground/60">
-            5 questions. Under 2 minutes. No more swiping.
+            5 въпроса. Под 2 минути. Без повече свайпване.
           </p>
         </div>
       </motion.div>

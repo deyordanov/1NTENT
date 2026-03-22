@@ -46,9 +46,9 @@ export default function SignupPage() {
 
       if (userError) {
         if (userError.code === "23505") {
-          setError("This email is already registered.");
+          setError("Този имейл вече е регистриран.");
         } else {
-          setError("Something went wrong. Please try again.");
+          setError("Нещо се обърка. Моля, опитай отново.");
         }
         setLoading(false);
         return;
@@ -63,7 +63,7 @@ export default function SignupPage() {
         });
 
       if (resultError) {
-        setError("Something went wrong. Please try again.");
+        setError("Нещо се обърка. Моля, опитай отново.");
         setLoading(false);
         return;
       }
@@ -71,7 +71,7 @@ export default function SignupPage() {
       sessionStorage.removeItem("testData");
       router.push("/confirmation");
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError("Нещо се обърка. Моля, опитай отново.");
       setLoading(false);
     }
   }
@@ -99,17 +99,17 @@ export default function SignupPage() {
         <div className="rounded-2xl border border-border/60 bg-card p-8 shadow-sm">
           <div className="text-center">
             <h1 className="font-serif text-2xl font-semibold">
-              Your profile is ready
+              Профилът ти е готов
             </h1>
             <p className="mt-3 text-muted-foreground">
-              Enter your email and we&apos;ll personally reach out to discuss
-              your matches.
+              Въведи имейла си и ние лично ще се свържем с теб,
+              за да обсъдим съвпаденията ти.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email address</Label>
+              <Label htmlFor="email">Имейл адрес</Label>
               <Input
                 id="email"
                 type="email"
@@ -128,11 +128,11 @@ export default function SignupPage() {
               className="w-full rounded-full"
               disabled={loading}
             >
-              {loading ? "Signing up..." : "Get Matched"}
+              {loading ? "Регистриране..." : "Намери съвпадение"}
             </Button>
           </form>
           <p className="mt-4 text-center text-xs text-muted-foreground">
-            We&apos;ll never share your email. No spam, ever.
+            Никога няма да споделим имейла ти. Без спам.
           </p>
         </div>
       </motion.div>
