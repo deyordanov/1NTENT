@@ -87,11 +87,22 @@ export default function SignupPage() {
         });
 
       trackEvent("EmailSubmitted");
+      // Send confirmation email (fire-and-forget)
+      fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      }).catch(() => {});
       sessionStorage.removeItem("testData");
       router.push("/confirmation");
     } catch {
       console.warn("Supabase not available, proceeding without saving");
       trackEvent("EmailSubmitted");
+      fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      }).catch(() => {});
       sessionStorage.removeItem("testData");
       router.push("/confirmation");
     }
