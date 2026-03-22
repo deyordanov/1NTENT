@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import { questions } from "@/lib/questions";
 import { computeScores } from "@/lib/scoring";
 import { Answers } from "@/types";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -23,6 +24,7 @@ export default function TestPage() {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
+  const [direction, setDirection] = useState(1);
 
   const question = questions[currentIndex];
   const progress = (currentIndex / questions.length) * 100;
@@ -34,6 +36,7 @@ export default function TestPage() {
 
   function handleNext() {
     if (currentIndex < questions.length - 1) {
+      setDirection(1);
       setCurrentIndex((prev) => prev + 1);
     } else {
       const scores = computeScores(answers);
@@ -47,6 +50,7 @@ export default function TestPage() {
 
   function handleBack() {
     if (currentIndex > 0) {
+      setDirection(-1);
       setCurrentIndex((prev) => prev - 1);
     }
   }
@@ -54,58 +58,87 @@ export default function TestPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
       <div className="w-full max-w-lg">
-        <div className="mb-6">
+        {/* Header */}
+        <div className="mb-4 text-center">
+          <Link
+            href="/"
+            className="font-serif text-lg font-semibold tracking-tight text-foreground"
+          >
+            MindMatch
+          </Link>
+        </div>
+
+        {/* Progress */}
+        <div className="mb-8">
           <div className="mb-2 flex justify-between text-sm text-muted-foreground">
             <span>
               Question {currentIndex + 1} of {questions.length}
             </span>
             <span>{Math.round(progress)}%</span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress value={progress} className="h-1.5" />
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl leading-relaxed">
-              {question.text}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <RadioGroup
-              value={currentAnswer?.toString()}
-              onValueChange={handleSelect}
-              className="space-y-3"
+        {/* Question card with animation */}
+        <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card p-8 shadow-sm">
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={currentIndex}
+              custom={direction}
+              initial={{ opacity: 0, x: direction * 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: direction * -40 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             >
-              {scaleLabels.map((label, i) => (
-                <div key={i} className="flex items-center space-x-3">
-                  <RadioGroupItem
-                    value={(i + 1).toString()}
-                    id={`option-${i + 1}`}
-                  />
-                  <Label
-                    htmlFor={`option-${i + 1}`}
-                    className="cursor-pointer text-base"
-                  >
-                    {label}
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
+              <h2 className="mb-8 font-serif text-xl font-semibold leading-relaxed sm:text-2xl">
+                {question.text}
+              </h2>
 
-            <div className="mt-8 flex justify-between">
-              <Button
-                variant="outline"
-                onClick={handleBack}
-                disabled={currentIndex === 0}
+              <RadioGroup
+                value={currentAnswer?.toString()}
+                onValueChange={handleSelect}
+                className="space-y-3"
               >
-                Back
-              </Button>
-              <Button onClick={handleNext} disabled={currentAnswer === undefined}>
-                {currentIndex < questions.length - 1 ? "Next" : "Finish"}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+                {scaleLabels.map((label, i) => (
+                  <div
+                    key={i}
+                    className="flex cursor-pointer items-center space-x-3 rounded-lg p-2 transition-colors hover:bg-muted/60"
+                    onClick={() => handleSelect((i + 1).toString())}
+                  >
+                    <RadioGroupItem
+                      value={(i + 1).toString()}
+                      id={`option-${i + 1}`}
+                    />
+                    <Label
+                      htmlFor={`option-${i + 1}`}
+                      className="cursor-pointer text-base"
+                    >
+                      {label}
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </motion.div>
+          </AnimatePresence>
+
+          <div className="mt-8 flex justify-between">
+            <Button
+              variant="outline"
+              onClick={handleBack}
+              disabled={currentIndex === 0}
+              className="rounded-full"
+            >
+              Back
+            </Button>
+            <Button
+              onClick={handleNext}
+              disabled={currentAnswer === undefined}
+              className="rounded-full px-6"
+            >
+              {currentIndex < questions.length - 1 ? "Next" : "Finish"}
+            </Button>
+          </div>
+        </div>
       </div>
     </main>
   );

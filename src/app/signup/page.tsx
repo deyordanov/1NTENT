@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { Answers, Scores } from "@/types";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -78,44 +79,62 @@ export default function SignupPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        <Card>
-          <CardHeader className="text-center">
-            <div className="mb-2 text-4xl">&#x2728;</div>
-            <CardTitle className="text-2xl">
-              Your personality profile is ready!
-            </CardTitle>
-            <p className="mt-2 text-muted-foreground">
-              Enter your email to get matched with compatible people.
-              We&apos;ll review your profile and reach out personally.
+      <motion.div
+        className="w-full max-w-md"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      >
+        {/* Header */}
+        <div className="mb-8 text-center">
+          <Link
+            href="/"
+            className="font-serif text-lg font-semibold tracking-tight text-foreground"
+          >
+            MindMatch
+          </Link>
+        </div>
+
+        <div className="rounded-2xl border border-border/60 bg-card p-8 shadow-sm">
+          <div className="text-center">
+            <h1 className="font-serif text-2xl font-semibold">
+              Your profile is ready
+            </h1>
+            <p className="mt-3 text-muted-foreground">
+              Enter your email and we&apos;ll personally reach out to discuss
+              your matches.
             </p>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email address</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              {error && (
-                <p className="text-sm text-destructive">{error}</p>
-              )}
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Signing up..." : "Get Matched"}
-              </Button>
-            </form>
-            <p className="mt-4 text-center text-xs text-muted-foreground">
-              We&apos;ll never share your email. No spam, ever.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email address</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="rounded-lg"
+              />
+            </div>
+            {error && (
+              <p className="text-sm text-destructive">{error}</p>
+            )}
+            <Button
+              type="submit"
+              className="w-full rounded-full"
+              disabled={loading}
+            >
+              {loading ? "Signing up..." : "Get Matched"}
+            </Button>
+          </form>
+          <p className="mt-4 text-center text-xs text-muted-foreground">
+            We&apos;ll never share your email. No spam, ever.
+          </p>
+        </div>
+      </motion.div>
     </main>
   );
 }
