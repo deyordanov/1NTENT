@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "1NTENT - Find Your Perfect Match Through Science",
+  title: "1NTENT - Personality-Based Matchmaking",
   description:
-    "Take our personality test and get matched with compatible people based on psychological compatibility.",
+    "We match you with the right person based on who you actually are. Take a short personality test and we\u2019ll find someone who truly complements you.",
 };
 
 export default function RootLayout({

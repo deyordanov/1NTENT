@@ -8,17 +8,26 @@ export function Hero() {
   return (
     <section className="relative flex min-h-screen items-center overflow-hidden pt-14">
       <div className="mx-auto max-w-4xl px-6 py-20">
+        <motion.p
+          className="mb-4 text-sm font-medium uppercase tracking-widest text-primary"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
+        >
+          Personality-based matchmaking
+        </motion.p>
+
         <motion.h1
           className="font-serif text-[2.75rem] leading-[1.1] tracking-tight sm:text-6xl lg:text-7xl"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
-          <span className="font-light">Stop swiping.</span>
+          <span className="font-light">We find the person</span>
           <br />
           <span className="font-semibold">
-            Start{" "}
-            <span className="italic text-primary">connecting.</span>
+            who{" "}
+            <span className="italic text-primary">fits you.</span>
           </span>
         </motion.h1>
 
@@ -28,8 +37,8 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
         >
-          A 3-minute personality assessment. Matches based on how you
-          actually think, not how you look in photos.
+          Take a short personality test and we&apos;ll match you with someone
+          who truly complements how you think, feel, and connect.
         </motion.p>
 
         <motion.div
