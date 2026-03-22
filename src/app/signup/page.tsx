@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase";
 import { Answers, Scores } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Logo } from "@/components/logo";
 import { Label } from "@/components/ui/label";
 
 export default function SignupPage() {
@@ -91,7 +92,7 @@ export default function SignupPage() {
             href="/"
             className="font-serif text-lg font-semibold tracking-tight text-foreground"
           >
-            MindMatch
+            <Logo />
           </Link>
         </div>
 

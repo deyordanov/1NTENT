@@ -1,7 +1,12 @@
 "use client";
 
-import { motion, type Variants } from "framer-motion";
-import { type ReactNode } from "react";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  type Variants,
+} from "framer-motion";
+import { useRef, type ReactNode } from "react";
 
 const fadeInUpVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -31,11 +36,54 @@ export function FadeInUp({
   );
 }
 
+export function Parallax({
+  children,
+  className,
+  offset = 80,
+}: {
+  children: ReactNode;
+  className?: string;
+  offset?: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+  const y = useTransform(scrollYProgress, [0, 1], [offset, -offset]);
+
+  return (
+    <div ref={ref} className={className}>
+      <motion.div style={{ y }}>{children}</motion.div>
+    </div>
+  );
+}
+
+export function TextReveal({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 const staggerContainerVariants: Variants = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.15,
+      staggerChildren: 0.12,
     },
   },
 };

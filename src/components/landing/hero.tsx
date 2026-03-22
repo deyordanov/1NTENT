@@ -6,90 +6,112 @@ import { Button } from "@/components/ui/button";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden pt-32 pb-24 sm:pt-40 sm:pb-32">
-      {/* Decorative blobs */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <motion.div
-          className="absolute -top-24 -right-24 h-96 w-96 rounded-full opacity-[0.08]"
-          style={{
-            background:
-              "radial-gradient(circle, hsl(346, 77%, 50%) 0%, transparent 70%)",
-          }}
-          animate={{ y: [0, 20, 0], x: [0, -10, 0] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute -bottom-32 -left-32 h-[500px] w-[500px] rounded-full opacity-[0.06]"
-          style={{
-            background:
-              "radial-gradient(circle, hsl(38, 92%, 50%) 0%, transparent 70%)",
-          }}
-          animate={{ y: [0, -15, 0], x: [0, 12, 0] }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1,
-          }}
-        />
-        <motion.div
-          className="absolute top-1/2 left-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.04]"
-          style={{
-            background:
-              "radial-gradient(circle, hsl(346, 60%, 60%) 0%, transparent 70%)",
-          }}
-          animate={{ scale: [1, 1.15, 1] }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </div>
+    <section className="relative min-h-screen overflow-hidden pt-14">
+      <div className="mx-auto flex max-w-6xl flex-col-reverse items-center gap-12 px-6 py-20 sm:py-0 lg:flex-row lg:min-h-[calc(100vh-56px)] lg:items-center lg:gap-20">
+        {/* Text side */}
+        <div className="flex-1">
+          <motion.h1
+            className="font-serif text-[2.75rem] leading-[1.1] tracking-tight sm:text-6xl lg:text-7xl"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <span className="font-light">Stop swiping.</span>
+            <br />
+            <span className="font-semibold">
+              Start{" "}
+              <span className="italic text-primary">connecting.</span>
+            </span>
+          </motion.h1>
 
-      <div className="relative mx-auto max-w-3xl px-6 text-center">
-        <motion.p
-          className="mb-4 text-sm font-medium uppercase tracking-widest text-primary"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-        >
-          Science-backed compatibility
-        </motion.p>
-        <motion.h1
-          className="font-serif text-5xl font-semibold leading-tight tracking-tight sm:text-6xl lg:text-7xl"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          Find someone who{" "}
-          <span className="italic text-primary">truly</span>{" "}
-          gets you
-        </motion.h1>
-        <motion.p
-          className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground sm:text-xl"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.35 }}
-        >
-          Take a short personality assessment and we&apos;ll match you with
-          people who complement your mind, values, and temperament.
-        </motion.p>
-        <motion.div
-          className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-        >
-          <Link href="/test">
-            <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                size="lg"
-                className="rounded-full px-8 py-6 text-base shadow-lg shadow-primary/20"
+          <motion.p
+            className="mt-6 max-w-md text-lg leading-relaxed text-muted-foreground"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          >
+            A 3-minute personality assessment. Matches based on how you
+            actually think, not how you look in photos.
+          </motion.p>
+
+          <motion.div
+            className="mt-8 flex items-center gap-5"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <Link href="/test">
+              <motion.div
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
               >
-                Begin Your Assessment
-              </Button>
+                <Button
+                  size="lg"
+                  className="rounded-full px-7 py-6 text-base shadow-lg shadow-primary/20"
+                >
+                  Take the test
+                </Button>
+              </motion.div>
+            </Link>
+            <span className="text-sm text-muted-foreground">
+              Free &middot; 15 questions
+            </span>
+          </motion.div>
+
+          {/* Scroll indicator */}
+          <motion.div
+            className="mt-16 hidden lg:block"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2, duration: 0.6 }}
+          >
+            <motion.div
+              className="flex flex-col items-start gap-2"
+              animate={{ y: [0, 6, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <span className="text-xs uppercase tracking-widest text-muted-foreground/60">
+                Scroll
+              </span>
+              <div className="h-8 w-px bg-border" />
             </motion.div>
-          </Link>
-          <span className="text-sm text-muted-foreground">
-            3 minutes &middot; 15 questions &middot; free
-          </span>
+          </motion.div>
+        </div>
+
+        {/* Orb side */}
+        <motion.div
+          className="relative flex flex-1 items-center justify-center"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="relative h-72 w-72 sm:h-96 sm:w-96">
+            <div
+              className="orb absolute inset-0 rounded-full opacity-70"
+              style={{
+                background:
+                  "conic-gradient(from 180deg, hsl(346, 77%, 50%), hsl(38, 92%, 50%), hsl(346, 60%, 70%), hsl(280, 40%, 60%), hsl(346, 77%, 50%))",
+              }}
+            />
+            <div
+              className="orb absolute -right-8 -top-8 h-32 w-32 rounded-full opacity-40 sm:h-40 sm:w-40"
+              style={{
+                background:
+                  "radial-gradient(circle, hsl(38, 92%, 60%), hsl(346, 50%, 70%))",
+                animationDelay: "-4s",
+                animationDuration: "15s, 25s",
+              }}
+            />
+            <div
+              className="orb absolute -bottom-4 -left-4 h-20 w-20 rounded-full opacity-50"
+              style={{
+                background:
+                  "radial-gradient(circle, hsl(280, 50%, 65%), hsl(346, 60%, 55%))",
+                animationDelay: "-8s",
+                animationDuration: "10s, 18s",
+              }}
+            />
+          </div>
         </motion.div>
       </div>
     </section>

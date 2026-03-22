@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Logo } from "@/components/logo";
 
 const scaleLabels = [
   "Strongly Disagree",
@@ -64,7 +65,7 @@ export default function TestPage() {
             href="/"
             className="font-serif text-lg font-semibold tracking-tight text-foreground"
           >
-            MindMatch
+            <Logo />
           </Link>
         </div>
 

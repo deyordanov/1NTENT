@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/logo";
 
 export default function ConfirmationPage() {
   return (
@@ -19,7 +20,7 @@ export default function ConfirmationPage() {
             href="/"
             className="font-serif text-lg font-semibold tracking-tight text-foreground"
           >
-            MindMatch
+            <Logo />
           </Link>
         </div>
 
@@ -58,7 +59,7 @@ export default function ConfirmationPage() {
             review your profile and reach out personally within a few days.
           </p>
           <p className="mt-3 text-sm text-muted-foreground">
-            In the meantime, feel free to share MindMatch with friends who
+            In the meantime, feel free to share 1NTENT with friends who
             might be interested.
           </p>
           <Link href="/">

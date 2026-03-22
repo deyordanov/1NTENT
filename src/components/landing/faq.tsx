@@ -8,27 +8,27 @@ const faqs = [
   {
     question: "How does the personality test work?",
     answer:
-      "Our test is based on the Big Five personality model, the gold standard in psychology. You\u2019ll answer 15 questions that measure five core dimensions: Openness, Conscientiousness, Extraversion, Agreeableness, and Emotional Stability. It takes about 3 minutes.",
+      "It\u2019s based on the Big Five model\u2014the most validated framework in psychology. Fifteen questions, five dimensions: how open you are, how you organize your life, your social energy, your empathy style, and your emotional patterns. Takes about 3 minutes.",
   },
   {
     question: "Is this a dating app?",
     answer:
-      "Not exactly. We\u2019re a curated matchmaking service. Instead of endless swiping, we personally review profiles and introduce people we believe are genuinely compatible. Think of us as a thoughtful friend who happens to know a lot about psychology.",
+      "No swiping, no endless scrolling. We\u2019re a curated service. We personally review every profile and only make introductions we genuinely believe in. Think of it as having a very thoughtful friend with a psychology degree.",
   },
   {
-    question: "How much does it cost?",
+    question: "What does it cost?",
     answer:
-      "Taking the personality test and signing up is completely free. We\u2019ll reach out to discuss our matching process and any associated costs before making any introductions.",
+      "The test and sign-up are free. We\u2019ll reach out to discuss our process and any costs before making introductions.",
   },
   {
-    question: "How do you protect my data?",
+    question: "How is my data handled?",
     answer:
-      "Your test results and personal information are stored securely and never shared with third parties. We only use your data to find compatible matches, and you can request deletion at any time.",
+      "Securely stored, never sold, never shared with third parties. Used only for matching. You can request deletion anytime.",
   },
   {
     question: "What happens after I sign up?",
     answer:
-      "After you complete the test and provide your email, a member of our team will personally review your profile. We\u2019ll reach out within a few days to introduce ourselves and discuss next steps.",
+      "Someone from our team personally reviews your profile and reaches out within a few days. No bots, no auto-emails\u2014a real conversation.",
   },
 ];
 
@@ -42,18 +42,16 @@ function FaqItem({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border-b border-border/60">
+    <div className="border-b border-border/50">
       <button
         onClick={() => setOpen(!open)}
         className="flex w-full items-center justify-between py-5 text-left transition-colors hover:text-primary"
       >
-        <span className="pr-4 text-base font-medium sm:text-lg">
-          {question}
-        </span>
+        <span className="pr-4 text-base font-medium">{question}</span>
         <motion.span
           animate={{ rotate: open ? 45 : 0 }}
           transition={{ duration: 0.2 }}
-          className="flex-shrink-0 text-xl text-muted-foreground"
+          className="flex-shrink-0 text-lg text-muted-foreground"
         >
           +
         </motion.span>
@@ -80,17 +78,30 @@ function FaqItem({
 export function FAQ() {
   return (
     <section className="py-24 sm:py-32">
-      <div className="mx-auto max-w-3xl px-6">
+      <div className="mx-auto max-w-5xl px-6">
         <FadeInUp>
-          <h2 className="text-center font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
-            Frequently Asked Questions
-          </h2>
-        </FadeInUp>
-        <FadeInUp delay={0.1}>
-          <div className="mt-12">
-            {faqs.map((faq, i) => (
-              <FaqItem key={i} question={faq.question} answer={faq.answer} />
-            ))}
+          <div className="flex flex-col gap-12 sm:flex-row sm:gap-20">
+            {/* Left — heading */}
+            <div className="sm:w-2/5">
+              <h2 className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
+                Questions?
+                <br />
+                <span className="text-muted-foreground">
+                  We&apos;ve got answers.
+                </span>
+              </h2>
+            </div>
+
+            {/* Right — accordion */}
+            <div className="flex-1">
+              {faqs.map((faq, i) => (
+                <FaqItem
+                  key={i}
+                  question={faq.question}
+                  answer={faq.answer}
+                />
+              ))}
+            </div>
           </div>
         </FadeInUp>
       </div>

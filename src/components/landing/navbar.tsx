@@ -2,12 +2,11 @@
 
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/logo";
 
 export function Navbar() {
   const { scrollY } = useScroll();
-  const bgOpacity = useTransform(scrollY, [0, 100], [0, 1]);
-  const borderOpacity = useTransform(scrollY, [0, 100], [0, 0.15]);
+  const bgOpacity = useTransform(scrollY, [0, 120], [0, 1]);
 
   return (
     <motion.nav
@@ -17,27 +16,24 @@ export function Navbar() {
           bgOpacity,
           (v) => `hsla(30, 25%, 98%, ${v})`
         ),
-        borderBottom: useTransform(
-          borderOpacity,
-          (v) => `1px solid rgba(0,0,0,${v})`
-        ),
         backdropFilter: useTransform(
           bgOpacity,
-          (v) => `blur(${v * 12}px)`
+          (v) => `blur(${v * 10}px)`
         ),
       }}
     >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
         <Link
           href="/"
-          className="font-serif text-xl font-semibold tracking-tight text-foreground"
+          className="font-serif text-lg font-medium tracking-tight"
         >
-          MindMatch
+          <Logo />
         </Link>
-        <Link href="/test">
-          <Button size="sm" className="rounded-full px-5">
-            Take the Test
-          </Button>
+        <Link
+          href="/test"
+          className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          Take the test &rarr;
         </Link>
       </div>
     </motion.nav>
