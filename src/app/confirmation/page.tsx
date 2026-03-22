@@ -166,7 +166,7 @@ export default function ConfirmationPage() {
               Запази кратък въвеждащ разговор и ще започнем веднага.
             </p>
             <a
-              href="https://calendly.com/YOUR_LINK_HERE"
+              href="https://calendly.com/palpamaul/30min"
               target="_blank"
               rel="noopener noreferrer"
             >

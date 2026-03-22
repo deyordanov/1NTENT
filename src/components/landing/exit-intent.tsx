@@ -65,7 +65,7 @@ export function ExitIntent() {
               Всеки ден е ден, в който можеше да срещнеш правилния човек.
             </h3>
             <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
-              127 души вече попълниха теста. 10 въпроса, под 3 минути, без регистрация.
+              10 въпроса, под 3 минути, без регистрация.
             </p>
             <div className="mt-6 flex flex-col gap-2">
               <Link href="/test" onClick={dismiss}>
