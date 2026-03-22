@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 
 const testimonials = [
@@ -22,9 +22,11 @@ export function TypingTestimonial() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [userInteracted, setUserInteracted] = useState(false);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [hasStarted, setHasStarted] = useState(false);
+  const autoTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (isInView && !hasStarted) {
@@ -48,16 +50,39 @@ export function TypingTestimonial() {
         clearInterval(interval);
         setIsTyping(false);
 
-        // Wait for reading, then move to next
-        setTimeout(() => {
-          setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-          setIsTyping(true);
-        }, 6000);
+        // Auto-advance only if user hasn't manually navigated
+        if (!userInteracted) {
+          autoTimerRef.current = setTimeout(() => {
+            setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+            setIsTyping(true);
+          }, 6000);
+        }
       }
     }, 30);
 
-    return () => clearInterval(interval);
-  }, [currentIndex, isTyping]);
+    return () => {
+      clearInterval(interval);
+      if (autoTimerRef.current) clearTimeout(autoTimerRef.current);
+    };
+  }, [currentIndex, isTyping, userInteracted]);
+
+  const goTo = useCallback((index: number) => {
+    if (autoTimerRef.current) clearTimeout(autoTimerRef.current);
+    setUserInteracted(true);
+    setCurrentIndex(index);
+    setIsTyping(true);
+
+    // Resume auto-play after 10 seconds of inactivity
+    setTimeout(() => setUserInteracted(false), 10000);
+  }, []);
+
+  const goPrev = useCallback(() => {
+    goTo((currentIndex - 1 + testimonials.length) % testimonials.length);
+  }, [currentIndex, goTo]);
+
+  const goNext = useCallback(() => {
+    goTo((currentIndex + 1) % testimonials.length);
+  }, [currentIndex, goTo]);
 
   const current = testimonials[currentIndex];
 
@@ -102,18 +127,42 @@ export function TypingTestimonial() {
             </motion.p>
           </AnimatePresence>
 
-          {/* Dots indicator */}
-          <div className="mt-6 flex gap-1.5">
-            {testimonials.map((_, i) => (
-              <div
-                key={i}
-                className={`h-1 rounded-full transition-all duration-500 ${
-                  i === currentIndex
-                    ? "w-6 bg-primary"
-                    : "w-1.5 bg-primary/20"
-                }`}
-              />
-            ))}
+          {/* Controls */}
+          <div className="mt-6 flex items-center gap-4">
+            {/* Dots — clickable */}
+            <div className="flex gap-1.5">
+              {testimonials.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => goTo(i)}
+                  className={`h-1.5 rounded-full transition-all duration-500 ${
+                    i === currentIndex
+                      ? "w-6 bg-primary"
+                      : "w-2 bg-primary/20 hover:bg-primary/40"
+                  }`}
+                />
+              ))}
+            </div>
+
+            {/* Arrow buttons */}
+            <div className="flex gap-1">
+              <button
+                onClick={goPrev}
+                className="flex h-7 w-7 items-center justify-center rounded-full border border-border/40 text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+              <button
+                onClick={goNext}
+                className="flex h-7 w-7 items-center justify-center rounded-full border border-border/40 text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </button>
+            </div>
           </div>
         </motion.div>
       </div>

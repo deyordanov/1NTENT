@@ -9,7 +9,7 @@ export function Statement() {
         <TextReveal className="mx-auto max-w-5xl px-6">
           <p className="font-serif text-4xl font-semibold leading-tight tracking-tight sm:text-6xl lg:text-7xl">
             Не свързваме{" "}
-            <span className="text-muted-foreground/30">лица.</span>
+            <span className="text-primary/30">лица.</span>
             <br />
             Свързваме{" "}
             <span className="text-primary">умове.</span>
