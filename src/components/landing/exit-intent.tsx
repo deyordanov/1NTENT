@@ -1,42 +1,46 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
 export function ExitIntent() {
   const [show, setShow] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
-
-  const handleMouseLeave = useCallback(
-    (e: MouseEvent) => {
-      // Only trigger when cursor moves to the top of the viewport (tab bar area)
-      if (e.clientY <= 5 && !dismissed) {
-        setShow(true);
-      }
-    },
-    [dismissed]
-  );
+  const dismissedRef = useRef(false);
+  const activeRef = useRef(false);
 
   useEffect(() => {
-    // Don't show on mobile or if already dismissed
-    if (dismissed || window.innerWidth < 768) return;
+    // Skip on mobile/touch devices
+    if (window.innerWidth < 768 || "ontouchstart" in window) return;
 
-    // Delay activation so it doesn't fire immediately
+    // Delay activation so it doesn't fire on initial page load
     const timer = setTimeout(() => {
-      document.addEventListener("mouseleave", handleMouseLeave);
-    }, 5000);
+      activeRef.current = true;
+    }, 2500);
+
+    function handleOut(e: MouseEvent) {
+      if (!activeRef.current || dismissedRef.current) return;
+
+      // e.relatedTarget is null when the cursor leaves the document entirely
+      // combined with upward movement (toward tabs/address bar)
+      if (e.relatedTarget === null && e.clientY < 50) {
+        activeRef.current = false;
+        setShow(true);
+      }
+    }
+
+    document.documentElement.addEventListener("mouseout", handleOut);
 
     return () => {
       clearTimeout(timer);
-      document.removeEventListener("mouseleave", handleMouseLeave);
+      document.documentElement.removeEventListener("mouseout", handleOut);
     };
-  }, [dismissed, handleMouseLeave]);
+  }, []);
 
   function dismiss() {
     setShow(false);
-    setDismissed(true);
+    dismissedRef.current = true;
   }
 
   return (
@@ -61,8 +65,7 @@ export function ExitIntent() {
               Преди да тръгнеш...
             </h3>
             <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
-              Тестът отнема под 3 минути и може да промени начина, по който
-              търсиш партньор.
+              10 въпроса. Под 3 минути. Без регистрация.
             </p>
             <div className="mt-6 flex flex-col gap-2">
               <Link href="/test" onClick={dismiss}>

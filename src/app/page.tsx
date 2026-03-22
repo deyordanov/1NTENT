@@ -2,6 +2,7 @@ import { Navbar } from "@/components/landing/navbar";
 import { Hero } from "@/components/landing/hero";
 import { Journey } from "@/components/landing/journey";
 import { Statement } from "@/components/landing/statement";
+import { TypingTestimonial } from "@/components/landing/typing-testimonial";
 import { CalculatorCTA } from "@/components/landing/calculator-cta";
 import { CTAFooter } from "@/components/landing/cta-footer";
 import { Footer } from "@/components/landing/footer";
@@ -22,6 +23,7 @@ export default function Home() {
         <Hero />
         <Journey />
         <Statement />
+        <TypingTestimonial />
         <CalculatorCTA />
         <CTAFooter />
       </main>

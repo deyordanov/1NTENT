@@ -242,17 +242,6 @@ export default function TestPage() {
           className="relative overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm"
           layout
         >
-          {/* Streak indicator */}
-          {streak >= 3 && (
-            <motion.div
-              className="flex items-center justify-center gap-1 border-b border-border/30 bg-primary/5 py-1.5 text-xs font-medium text-primary"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-            >
-              <span>{streak} поредни!</span>
-            </motion.div>
-          )}
-
           <div className="p-8">
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div

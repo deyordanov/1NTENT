@@ -63,9 +63,20 @@ function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text);
 }
 
+function generateReferralCode(): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let code = "";
+  for (let i = 0; i < 6; i++) {
+    code += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return code;
+}
+
 export default function ConfirmationPage() {
   const [confetti, setConfetti] = useState<number[]>([]);
   const [copied, setCopied] = useState(false);
+  const [referralCode] = useState(() => generateReferralCode());
+  const [referralCopied, setReferralCopied] = useState(false);
 
   useEffect(() => {
     const pieces = Array.from({ length: CONFETTI_COUNT }, (_, i) => i);
@@ -165,22 +176,43 @@ export default function ConfirmationPage() {
             </a>
           </div>
 
-          {/* Share CTA */}
+          {/* Referral CTA */}
           <motion.div
-            className="mt-6"
+            className="mt-6 rounded-xl border border-border/40 bg-muted/30 p-5"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
           >
-            <p className="mb-3 text-sm text-muted-foreground">
-              Познаваш някой, който също търси нещо истинско?
+            <p className="text-sm font-medium text-foreground">
+              Сподели с приятел и ще разгледаме профила ти по-бързо
             </p>
-            <button
-              onClick={handleShare}
-              className="w-full rounded-full border border-border/60 bg-white px-5 py-2.5 text-sm font-medium text-foreground transition-all hover:border-primary/30 hover:shadow-sm"
-            >
-              {copied ? "Копирано!" : "Сподели 1NTENT с приятел"}
-            </button>
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              Твоят код за препоръка:
+            </p>
+            <div className="mt-3 flex items-center gap-2">
+              <div className="flex-1 rounded-lg border border-border/60 bg-white px-4 py-2.5 text-center font-mono text-lg font-bold tracking-widest text-foreground">
+                {referralCode}
+              </div>
+              <button
+                onClick={() => {
+                  const url = typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg";
+                  copyToClipboard(`${url}?ref=${referralCode}`);
+                  setReferralCopied(true);
+                  setTimeout(() => setReferralCopied(false), 2000);
+                }}
+                className="rounded-lg border border-primary/30 bg-primary/5 px-4 py-2.5 text-sm font-medium text-primary transition-all hover:bg-primary/10"
+              >
+                {referralCopied ? "Копирано!" : "Копирай линк"}
+              </button>
+            </div>
+            <div className="mt-3 flex justify-center gap-3">
+              <button
+                onClick={handleShare}
+                className="text-xs text-muted-foreground underline underline-offset-2 transition-colors hover:text-foreground"
+              >
+                {copied ? "Копирано!" : "Или сподели директно"}
+              </button>
+            </div>
           </motion.div>
 
           <Link
