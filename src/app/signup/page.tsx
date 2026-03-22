@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/logo";
 import { RadarChart } from "@/components/radar-chart";
+import { trackEvent } from "@/lib/analytics";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -85,10 +86,12 @@ export default function SignupPage() {
           scores: testData.scores,
         });
 
+      trackEvent("EmailSubmitted");
       sessionStorage.removeItem("testData");
       router.push("/confirmation");
     } catch {
       console.warn("Supabase not available, proceeding without saving");
+      trackEvent("EmailSubmitted");
       sessionStorage.removeItem("testData");
       router.push("/confirmation");
     }

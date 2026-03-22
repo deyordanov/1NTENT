@@ -8,6 +8,7 @@ import { questions } from "@/lib/questions";
 import { computeScores } from "@/lib/scoring";
 import { Answers } from "@/types";
 import { Logo } from "@/components/logo";
+import { trackEvent } from "@/lib/analytics";
 
 const scaleLabels = [
   "Изобщо не",
@@ -153,6 +154,10 @@ export default function TestPage() {
     setAnswers(updated);
     setSelectedFlash(value);
     setStreak((s) => s + 1);
+
+    // Track first answer and completion
+    if (Object.keys(answers).length === 0) trackEvent("TestStarted");
+    if (isLast) trackEvent("TestCompleted");
 
     const particleCount = Math.min(3 + streak, 8) + (value >= 4 ? 2 : 0);
     spawnParticles(e, particleCount);

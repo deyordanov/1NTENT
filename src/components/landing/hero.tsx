@@ -1,16 +1,65 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { trackEvent } from "@/lib/analytics";
+
+// Curated young adult avatar IDs from pravatar.cc
+const YOUNG_ADULT_IDS = [1, 3, 5, 6, 8, 9, 10, 11, 12, 13, 15, 16, 18, 20, 21, 25, 26, 27, 28, 32, 33, 35, 36, 38, 39, 41, 44, 45, 47, 48, 49, 50, 52, 56, 57, 58, 59, 60, 61, 64, 65, 68];
+
+// A/B test variants for new visitors
+const AB_VARIANTS = [
+  {
+    headline: (
+      <>
+        <span className="font-light">Намираме човека,</span>
+        <br />
+        <span className="font-semibold">
+          който <span className="italic text-primary">ти подхожда.</span>
+        </span>
+      </>
+    ),
+    subtitle: "Попълни кратък тест за личността и ние ще те свържем с някой, който наистина допълва начина ти на мислене, чувства и общуване.",
+    cta: "Попълни теста",
+  },
+  {
+    headline: (
+      <>
+        <span className="font-light">Спри да търсиш.</span>
+        <br />
+        <span className="font-semibold">
+          Нека <span className="italic text-primary">те намерим.</span>
+        </span>
+      </>
+    ),
+    subtitle: "10 въпроса за теб. Ние се грижим за останалото. Без приложения, без безкрайни профили.",
+    cta: "Започни безплатно",
+  },
+  {
+    headline: (
+      <>
+        <span className="font-light">Запознанства</span>
+        <br />
+        <span className="font-semibold">
+          с <span className="italic text-primary">намерение.</span>
+        </span>
+      </>
+    ),
+    subtitle: "Попълни кратък тест и ние ще подберем някой, който наистина ти подхожда. Лично, не алгоритмично.",
+    cta: "Виж кой ти подхожда",
+  },
+];
 
 export function Hero() {
   const [isReturning, setIsReturning] = useState(false);
-  const [avatarSeed, setAvatarSeed] = useState("default");
+  const [avatarIds, setAvatarIds] = useState([1, 5, 11, 32]);
+  const [abVariant, setAbVariant] = useState(0);
 
   useEffect(() => {
-    setAvatarSeed(String(Math.floor(Math.random() * 100000)));
+    const shuffled = [...YOUNG_ADULT_IDS].sort(() => Math.random() - 0.5);
+    setAvatarIds(shuffled.slice(0, 4));
   }, []);
 
   useEffect(() => {
@@ -19,7 +68,26 @@ export function Hero() {
       setIsReturning(true);
     }
     localStorage.setItem("1ntent_visited", "1");
+
+    // A/B test — persist variant per user
+    const stored = localStorage.getItem("1ntent_ab");
+    if (stored !== null) {
+      setAbVariant(parseInt(stored));
+    } else {
+      const variant = Math.floor(Math.random() * AB_VARIANTS.length);
+      localStorage.setItem("1ntent_ab", String(variant));
+      setAbVariant(variant);
+    }
   }, []);
+
+  // Track which variant was shown
+  useEffect(() => {
+    if (!isReturning) {
+      trackEvent("HeroVariant", { variant: String.fromCharCode(65 + abVariant) });
+    }
+  }, [abVariant, isReturning]);
+
+  const variant = AB_VARIANTS[abVariant];
 
   return (
     <section className="relative flex min-h-screen items-center overflow-hidden pt-14">
@@ -51,14 +119,7 @@ export function Hero() {
               </span>
             </>
           ) : (
-            <>
-              <span className="font-light">Намираме човека,</span>
-              <br />
-              <span className="font-semibold">
-                който{" "}
-                <span className="italic text-primary">ти подхожда.</span>
-              </span>
-            </>
+            variant.headline
           )}
         </motion.h1>
 
@@ -70,7 +131,7 @@ export function Hero() {
         >
           {isReturning
             ? "Тестът е кратък и безплатен. Попълни го и ще те свържем с някой, който наистина ти подхожда."
-            : "Попълни кратък тест за личността и ние ще те свържем с някой, който наистина допълва начина ти на мислене, чувства и общуване."}
+            : variant.subtitle}
         </motion.p>
 
         <motion.div
@@ -88,7 +149,7 @@ export function Hero() {
                 size="lg"
                 className="rounded-full px-7 py-6 text-base shadow-lg shadow-primary/20"
               >
-                {isReturning ? "Започни теста" : "Попълни теста"}
+                {isReturning ? "Започни теста" : variant.cta}
               </Button>
             </motion.div>
           </Link>
@@ -106,10 +167,10 @@ export function Hero() {
         >
           <div className="flex items-center gap-3">
             <div className="flex -space-x-2">
-              {[1, 2, 3, 4].map((i) => (
+              {avatarIds.map((id) => (
                 <img
-                  key={i}
-                  src={`https://i.pravatar.cc/56?u=${avatarSeed}-${i}`}
+                  key={id}
+                  src={`https://i.pravatar.cc/56?img=${id}`}
                   alt=""
                   className="h-8 w-8 rounded-full border-2 border-background object-cover"
                   loading="lazy"

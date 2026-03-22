@@ -40,6 +40,12 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap"
           rel="stylesheet"
         />
+        {/* Plausible Analytics — change data-domain when you have a custom domain */}
+        <script
+          defer
+          data-domain="1ntent.vercel.app"
+          src="https://plausible.io/js/script.js"
+        />
       </head>
       <body className="min-h-screen antialiased font-sans">
         {children}
