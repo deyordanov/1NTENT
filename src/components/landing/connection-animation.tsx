@@ -3,20 +3,11 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 
-function ProfileSilhouette({ flip }: { flip?: boolean }) {
+function ProfileSilhouette() {
+  // Standard user icon silhouette — like the ones used in contact lists / avatars
   return (
-    <svg
-      viewBox="0 0 80 100"
-      fill="none"
-      className={`w-16 sm:w-20 ${flip ? "scale-x-[-1]" : ""}`}
-    >
-      <circle cx="40" cy="28" r="16" fill="currentColor" opacity="0.15" />
-      <path
-        d="M12 100 C12 72, 22 58, 40 58 C58 58, 68 72, 68 100"
-        fill="currentColor"
-        opacity="0.1"
-      />
-      <circle cx="40" cy="28" r="14" fill="currentColor" opacity="0.08" />
+    <svg viewBox="0 0 24 24" fill="currentColor" className="h-28 w-28 sm:h-36 sm:w-36" opacity="0.28">
+      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
     </svg>
   );
 }
@@ -26,59 +17,50 @@ export function ConnectionAnimation() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="py-12 sm:py-16">
+    <section ref={ref} className="py-16 sm:py-24">
       <div className="mx-auto max-w-2xl px-6">
-        <div className="relative flex items-center justify-center py-12">
+        <div className="relative flex items-center justify-center py-10">
           {/* Left profile */}
           <motion.div
-            className="flex-shrink-0 text-primary/60"
-            initial={{ x: -60, opacity: 0 }}
+            className="flex-shrink-0 text-primary"
+            initial={{ x: -50, opacity: 0 }}
             animate={isInView ? { x: 0, opacity: 1 } : {}}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
             <ProfileSilhouette />
           </motion.div>
 
-          {/* Connection area — fixed width, heart centered */}
-          <div className="relative mx-4 flex w-28 items-center justify-center sm:mx-8 sm:w-40">
+          {/* Connection area */}
+          <div className="relative mx-4 flex h-16 w-28 items-center justify-center sm:mx-6 sm:w-40">
             {/* Dashed line */}
             <motion.div
-              className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2"
+              className="absolute inset-x-0 h-px"
               style={{
                 background:
-                  "repeating-linear-gradient(90deg, hsl(346, 77%, 70%) 0px, hsl(346, 77%, 70%) 4px, transparent 4px, transparent 10px)",
+                  "repeating-linear-gradient(90deg, hsl(346, 60%, 75%) 0px, hsl(346, 60%, 75%) 3px, transparent 3px, transparent 8px)",
               }}
               initial={{ scaleX: 0, opacity: 0 }}
               animate={isInView ? { scaleX: 1, opacity: 1 } : {}}
-              transition={{
-                duration: 0.6,
-                delay: 0.5,
-                ease: [0.22, 1, 0.36, 1],
-              }}
+              transition={{ duration: 0.6, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
             />
 
-            {/* Heart */}
+            {/* Heart — centered with background to cut the line */}
             <motion.div
-              className="relative z-10 rounded-full bg-background p-1"
+              className="relative z-10 flex items-center justify-center rounded-full bg-background px-2"
               initial={{ scale: 0, opacity: 0 }}
               animate={isInView ? { scale: 1, opacity: 1 } : {}}
-              transition={{
-                type: "spring",
-                stiffness: 300,
-                damping: 15,
-                delay: 0.9,
-              }}
+              transition={{ type: "spring", stiffness: 300, damping: 15, delay: 0.9 }}
             >
               <motion.svg
                 viewBox="0 0 24 24"
-                className="h-8 w-8 text-primary sm:h-10 sm:w-10"
+                className="h-10 w-10 text-primary sm:h-14 sm:w-14"
                 fill="currentColor"
-                animate={isInView ? { scale: [1, 1.15, 1] } : {}}
+                animate={isInView ? { scale: [1, 1.25, 1, 1.15, 1] } : {}}
                 transition={{
-                  duration: 1.2,
-                  delay: 1.4,
+                  duration: 0.8,
+                  delay: 1.2,
                   repeat: Infinity,
-                  repeatDelay: 2,
+                  repeatDelay: 0.4,
                   ease: "easeInOut",
                 }}
               >
@@ -86,46 +68,43 @@ export function ConnectionAnimation() {
               </motion.svg>
             </motion.div>
 
-            {/* Pulse ring */}
+            {/* Pulse ring — centered to the container */}
             <motion.div
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+              className="pointer-events-none absolute inset-0 flex items-center justify-center"
               initial={{ scale: 0, opacity: 0 }}
-              animate={
-                isInView
-                  ? { scale: [1, 2.5], opacity: [0.3, 0] }
-                  : {}
-              }
+              animate={isInView ? { scale: [1, 2.2], opacity: [0.2, 0] } : {}}
               transition={{
-                duration: 1.5,
+                duration: 1,
                 delay: 1.2,
                 repeat: Infinity,
-                repeatDelay: 2.5,
+                repeatDelay: 0.2,
                 ease: "easeOut",
               }}
             >
-              <div className="h-10 w-10 rounded-full border border-primary sm:h-12 sm:w-12" />
+              <div className="h-8 w-8 rounded-full border border-primary" />
             </motion.div>
           </div>
 
           {/* Right profile */}
           <motion.div
-            className="flex-shrink-0 text-primary/60"
-            initial={{ x: 60, opacity: 0 }}
+            className="flex-shrink-0 text-primary"
+            initial={{ x: 50, opacity: 0 }}
             animate={isInView ? { x: 0, opacity: 1 } : {}}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
-            <ProfileSilhouette flip />
+            <ProfileSilhouette />
           </motion.div>
         </div>
 
         {/* Caption */}
         <motion.p
-          className="text-center font-serif text-lg italic text-muted-foreground/70 sm:text-xl"
+          className="mt-2 text-center font-serif text-xl font-semibold tracking-tight sm:text-2xl"
           initial={{ opacity: 0, y: 10 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 1.2 }}
         >
-          Свързваме хора, които наистина си подхождат
+          <span className="text-foreground/70">Свързваме хора, които </span>
+          <span className="italic text-primary">наистина си подхождат</span>
         </motion.p>
       </div>
     </section>
