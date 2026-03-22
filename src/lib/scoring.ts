@@ -1,6 +1,14 @@
 import { Answers, Dimension, Scores } from "@/types";
 import { questions } from "./questions";
 
+export const dimensionLabels: Record<Dimension, string> = {
+  openness: "Откритост",
+  conscientiousness: "Отговорност",
+  extraversion: "Общителност",
+  agreeableness: "Съгласие",
+  neuroticism: "Чувствителност",
+};
+
 export function computeScores(answers: Answers): Scores {
   const dimensionTotals: Record<Dimension, { sum: number; count: number }> = {
     openness: { sum: 0, count: 0 },
