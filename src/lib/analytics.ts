@@ -10,6 +10,7 @@
 //   MobileCTAClicked — clicked mobile sticky CTA
 //   ReferralCopied — copied referral link
 //   ReferralShared (prop: channel) — shared via WhatsApp/Viber/other
+//   TestAbandoned (props: question, progress) — left test early, shows which question and % completed
 
 declare global {
   interface Window {

@@ -78,6 +78,28 @@ export default function TestPage() {
   const [transitioning, setTransitioning] = useState(false);
   const [showResume, setShowResume] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const currentIndexRef = useRef(currentIndex);
+  const completedRef = useRef(false);
+
+  // Keep ref in sync
+  useEffect(() => {
+    currentIndexRef.current = currentIndex;
+  }, [currentIndex]);
+
+  // Track test abandonment on page leave
+  useEffect(() => {
+    function handleBeforeUnload() {
+      if (!completedRef.current && currentIndexRef.current > 0) {
+        const progress = Math.round(((currentIndexRef.current + 1) / questions.length) * 100);
+        trackEvent("TestAbandoned", {
+          question: currentIndexRef.current + 1,
+          progress,
+        });
+      }
+    }
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
 
   // Restore saved progress
   useEffect(() => {
@@ -157,7 +179,10 @@ export default function TestPage() {
 
     // Track first answer and completion
     if (Object.keys(answers).length === 0) trackEvent("TestStarted");
-    if (isLast) trackEvent("TestCompleted");
+    if (isLast) {
+      trackEvent("TestCompleted");
+      completedRef.current = true;
+    }
 
     const particleCount = Math.min(3 + streak, 8) + (value >= 4 ? 2 : 0);
     spawnParticles(e, particleCount);
