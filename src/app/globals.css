@@ -68,6 +68,48 @@
   animation: orb-float 12s ease-in-out infinite, orb-rotate 20s linear infinite;
 }
 
+/* Custom range slider */
+.slider-input {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+}
+
+.slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid hsl(346, 77%, 50%);
+  box-shadow: 0 2px 8px hsla(346, 77%, 50%, 0.25);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.slider-input::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 2px 12px hsla(346, 77%, 50%, 0.35);
+}
+
+.slider-input::-webkit-slider-thumb:active {
+  transform: scale(1.05);
+}
+
+.slider-input::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid hsl(346, 77%, 50%);
+  box-shadow: 0 2px 8px hsla(346, 77%, 50%, 0.25);
+  cursor: pointer;
+}
+
 /* Text reveal */
 @keyframes text-reveal {
   from { clip-path: inset(0 100% 0 0); }

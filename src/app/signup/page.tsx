@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -9,7 +9,7 @@ import { Answers, Scores } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/logo";
-import { Label } from "@/components/ui/label";
+import { RadarChart } from "@/components/radar-chart";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -20,6 +20,7 @@ export default function SignupPage() {
     answers: Answers;
     scores: Scores;
   } | null>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("testData");
@@ -49,7 +50,6 @@ export default function SignupPage() {
         if (userError.code === "23505") {
           setError("Този имейл вече е регистриран.");
         } else {
-          // Supabase not configured yet — proceed anyway
           console.warn("Supabase error, proceeding without saving:", userError);
           sessionStorage.removeItem("testData");
           router.push("/confirmation");
@@ -69,7 +69,6 @@ export default function SignupPage() {
       sessionStorage.removeItem("testData");
       router.push("/confirmation");
     } catch {
-      // Supabase not configured yet — proceed anyway
       console.warn("Supabase not available, proceeding without saving");
       sessionStorage.removeItem("testData");
       router.push("/confirmation");
@@ -79,7 +78,7 @@ export default function SignupPage() {
   if (!testData) return null;
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center px-4">
+    <main className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
       <motion.div
         className="w-full max-w-md"
         initial={{ opacity: 0, y: 24 }}
@@ -99,27 +98,54 @@ export default function SignupPage() {
         <div className="rounded-2xl border border-border/60 bg-card p-8 shadow-sm">
           <div className="text-center">
             <h1 className="font-serif text-2xl font-semibold">
-              Профилът ти е готов
+              Твоят профил
             </h1>
-            <p className="mt-3 text-muted-foreground">
-              Въведи имейла си и ние лично ще се свържем с теб,
-              за да обсъдим съвпаденията ти.
+          </div>
+
+          {/* Blurred radar chart */}
+          <div className="relative mt-6 mb-2">
+            <RadarChart scores={testData.scores} blurred />
+
+            {/* Overlay CTA on top of blurred chart — clicks scroll to email */}
+            <motion.button
+              className="absolute inset-0 flex cursor-pointer items-center justify-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.5, duration: 0.5 }}
+              onClick={() => {
+                emailRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+                setTimeout(() => emailRef.current?.focus(), 400);
+              }}
+            >
+              <div className="rounded-xl bg-card/90 px-5 py-3 text-center shadow-lg backdrop-blur-sm transition-transform hover:scale-105">
+                <p className="text-sm font-medium text-foreground">
+                  Виж пълния си профил
+                </p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Въведи имейла си по-долу
+                </p>
+              </div>
+            </motion.button>
+          </div>
+
+          {/* CTA */}
+          <div className="mt-6 border-t border-border/40 pt-5">
+            <p className="text-center text-[15px] text-muted-foreground">
+              Остави имейл и ще се свържем с теб за следващата стъпка.
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Имейл адрес</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="rounded-lg"
-              />
-            </div>
+          <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+            <Input
+              ref={emailRef}
+              id="email"
+              type="email"
+              placeholder="Имейл адрес"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="rounded-lg"
+            />
             {error && (
               <p className="text-sm text-destructive">{error}</p>
             )}
@@ -128,7 +154,7 @@ export default function SignupPage() {
               className="w-full rounded-full"
               disabled={loading}
             >
-              {loading ? "Регистриране..." : "Намери съвпадение"}
+              {loading ? "Изпращане..." : "Продължи към подбора"}
             </Button>
           </form>
           <p className="mt-4 text-center text-xs text-muted-foreground">

@@ -13,7 +13,9 @@ export function computeScores(answers: Answers): Scores {
   for (const question of questions) {
     const answer = answers[question.id];
     if (answer !== undefined) {
-      dimensionTotals[question.dimension].sum += answer;
+      // Reverse-scored: 1→5, 2→4, 3→3, 4→2, 5→1
+      const value = question.reverse ? 6 - answer : answer;
+      dimensionTotals[question.dimension].sum += value;
       dimensionTotals[question.dimension].count += 1;
     }
   }

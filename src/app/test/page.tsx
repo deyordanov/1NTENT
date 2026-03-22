@@ -7,7 +7,6 @@ import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-mo
 import { questions } from "@/lib/questions";
 import { computeScores } from "@/lib/scoring";
 import { Answers } from "@/types";
-import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 
 const scaleLabels = [
@@ -148,13 +147,13 @@ export default function TestPage() {
     }
   }
 
-  const encouragement = [
-    "Чудесно начало!",
-    "Продължавай така!",
-    "Вече си на половината!",
-    "Почти готово!",
-    "Последен въпрос!",
-  ];
+  const encouragement: Record<number, string> = {
+    0: "Чудесно начало!",
+    4: "Вече си на половината!",
+    7: "Още малко!",
+    8: "Почти готово!",
+    9: "Последен въпрос!",
+  };
 
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-12">

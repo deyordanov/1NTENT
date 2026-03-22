@@ -2,6 +2,7 @@ export interface Question {
   id: string;
   text: string;
   dimension: Dimension;
+  reverse?: boolean;
 }
 
 export type Dimension =

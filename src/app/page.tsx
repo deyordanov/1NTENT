@@ -6,10 +6,12 @@ import { CalculatorCTA } from "@/components/landing/calculator-cta";
 import { CTAFooter } from "@/components/landing/cta-footer";
 import { Footer } from "@/components/landing/footer";
 import { GrainOverlay } from "@/components/landing/grain-overlay";
+import { CursorHearts } from "@/components/cursor-hearts";
 
 export default function Home() {
   return (
     <>
+      <CursorHearts />
       <GrainOverlay />
       <Navbar />
       <main>

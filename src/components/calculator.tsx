@@ -67,15 +67,7 @@ function SliderInput({
           {displayValue}
         </span>
       </div>
-      <div className="relative py-2">
-        <div className="relative h-2 rounded-full bg-muted/60">
-          <motion.div
-            className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary/70 to-primary"
-            style={{ width: `${percentage}%` }}
-            layout
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          />
-        </div>
+      <div className="relative">
         <input
           type="range"
           min={min}
@@ -83,13 +75,10 @@ function SliderInput({
           step={step}
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-        />
-        <motion.div
-          className="pointer-events-none absolute top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-primary bg-white shadow-md shadow-primary/20"
-          style={{ left: `${percentage}%` }}
-          layout
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          className="slider-input w-full"
+          style={{
+            background: `linear-gradient(to right, hsl(346, 77%, 50%) 0%, hsl(346, 77%, 50%) ${percentage}%, hsl(30, 10%, 90%) ${percentage}%, hsl(30, 10%, 90%) 100%)`,
+          }}
         />
       </div>
       <div className="mt-2 flex justify-between text-xs text-muted-foreground/50">
@@ -100,29 +89,52 @@ function SliderInput({
   );
 }
 
+function pick<T>(arr: T[], seed: number): T {
+  return arr[Math.abs(seed) % arr.length];
+}
+
 function getComparison(annualCost: number): string {
-  if (annualCost >= 100000)
-    return "Това е първоначална вноска за жилище \u2014 отишла в безцелни запознанства.";
-  if (annualCost >= 50000)
-    return "Това е луксозна кола. Похарчена за хора, които никога няма да срещнеш.";
-  if (annualCost >= 20000)
-    return "Това е година обучение. Инвестирана в безсмислени разговори.";
-  if (annualCost >= 10000)
-    return `Това са ${Math.round(annualCost / 2500)} международни пътувания \u2014 пропилени в празни разговори.`;
-  if (annualCost >= 5000)
-    return `Това са ${Math.round(annualCost / 1200)} уикенд почивки, които не взе.`;
-  return `Това са ${Math.round(annualCost / 150)} страхотни вечери навън \u2014 заменени с палеца ти по екрана.`;
+  if (annualCost >= 80000) return pick([
+    "Първоначална вноска за апартамент в центъра на София.",
+    "Чисто нов Mercedes A-Class, похарчен за безцелни запознанства.",
+    "Две години наем в луксозен апартамент.",
+  ], annualCost);
+  if (annualCost >= 40000) return pick([
+    "Година в международно бизнес училище.",
+    "Околосветско пътуване за двама с първа класа.",
+    "Нова кухня, баня и ремонт на хола.",
+  ], annualCost);
+  if (annualCost >= 15000) return pick([
+    "Три месеца в Бали, Тайланд и Япония.",
+    "Пълно оборудване за домашен фитнес и година персонален треньор.",
+    "Нов MacBook Pro и iPad. Всяка година.",
+  ], annualCost);
+  if (annualCost >= 5000) return pick([
+    "Уикенд в Париж или Барселона с хотел и вечери.",
+    "Годишен абонамент за фитнес, масажи и хубави дрехи.",
+    "Нов iPhone. Всяка година.",
+  ], annualCost);
+  return pick([
+    "Хубава вечеря за двама в добър ресторант.",
+    "Месец абонамент за фитнес и няколко масажа.",
+    "Няколко добри книги и уикенд в планината.",
+  ], annualCost);
 }
 
 function getHoursComparison(annualHours: number): string {
   const workDays = Math.round(annualHours / 8);
-  if (workDays >= 30)
-    return `${workDays} работни дни. Това е над месец от живота ти \u2014 всяка година.`;
-  if (workDays >= 15)
-    return `${workDays} пълни работни дни \u2014 три седмици, които никога няма да върнеш.`;
-  if (workDays >= 5)
-    return `${workDays} пълни работни дни, загубени в дейтинг приложения.`;
-  return `${annualHours} часа, които можеха да отидат за нещо истинско.`;
+  if (workDays >= 30) return pick([
+    `${workDays} работни дни. Повече от месец от живота ти, всяка година.`,
+    `${workDays} дни. Можеше да научиш нов език за това време.`,
+  ], annualHours);
+  if (workDays >= 10) return pick([
+    `${workDays} пълни работни дни, прекарани в дейтинг приложения.`,
+    `${workDays} дни. Цяла ваканция, която никога няма да върнеш.`,
+  ], annualHours);
+  return pick([
+    `${annualHours} часа, които можеха да отидат за нещо истинско.`,
+    `${annualHours} часа. Достатъчно за ${Math.round(annualHours / 2)} тренировки или ${Math.round(annualHours / 3)} хубави разходки.`,
+  ], annualHours);
 }
 
 export function Calculator({ compact = false }: { compact?: boolean }) {
