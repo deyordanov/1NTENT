@@ -7,11 +7,15 @@ import { CTAFooter } from "@/components/landing/cta-footer";
 import { Footer } from "@/components/landing/footer";
 import { GrainOverlay } from "@/components/landing/grain-overlay";
 import { CursorHearts } from "@/components/cursor-hearts";
+import { MobileStickyCTA } from "@/components/landing/mobile-sticky-cta";
+import { ExitIntent } from "@/components/landing/exit-intent";
 
 export default function Home() {
   return (
     <>
       <CursorHearts />
+      <MobileStickyCTA />
+      <ExitIntent />
       <GrainOverlay />
       <Navbar />
       <main>

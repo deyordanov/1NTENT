@@ -65,7 +65,31 @@ export function Hero() {
           </span>
         </motion.div>
 
-{/* scroll indicator removed */}
+        {/* Social proof */}
+        <motion.div
+          className="mt-12 flex items-center gap-3"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+        >
+          <div className="flex -space-x-2">
+            {[
+              "bg-primary/70",
+              "bg-primary/50",
+              "bg-primary/30",
+              "bg-primary/20",
+            ].map((bg, i) => (
+              <div
+                key={i}
+                className={`h-7 w-7 rounded-full border-2 border-background ${bg}`}
+              />
+            ))}
+          </div>
+          <p className="text-sm text-muted-foreground">
+            <span className="font-semibold text-foreground">127+</span> души
+            вече попълниха теста
+          </p>
+        </motion.div>
       </div>
     </section>
   );

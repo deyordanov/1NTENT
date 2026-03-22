@@ -5,6 +5,21 @@ export const metadata: Metadata = {
   title: "1NTENT - Мачмейкинг, базиран на личността",
   description:
     "Свързваме те с правилния човек, базирайки се на това кой наистина си. Попълни кратък тест за личността и ние ще намерим някой, който наистина те допълва.",
+  metadataBase: new URL("https://1ntent.vercel.app"),
+  openGraph: {
+    title: "1NTENT - Намираме човека, който ти подхожда",
+    description:
+      "Попълни кратък тест за личността и ние ще те свържем с някой, който наистина те допълва.",
+    siteName: "1NTENT",
+    locale: "bg_BG",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "1NTENT - Намираме човека, който ти подхожда",
+    description:
+      "Мачмейкинг, базиран на личността. Попълни теста и намери своето съвпадение.",
+  },
 };
 
 export default function RootLayout({

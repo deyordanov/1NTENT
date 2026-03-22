@@ -74,6 +74,7 @@ export default function TestPage() {
   const [particles, setParticles] = useState<{ id: number; x: number; y: number }[]>([]);
   const [selectedFlash, setSelectedFlash] = useState<number | null>(null);
   const [streak, setStreak] = useState(0);
+  const [transitioning, setTransitioning] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -114,6 +115,9 @@ export default function TestPage() {
   }, []);
 
   function handleSelect(value: number, e: React.MouseEvent) {
+    if (transitioning) return;
+    setTransitioning(true);
+
     const updated = { ...answers, [question.id]: value };
     setAnswers(updated);
     setSelectedFlash(value);
@@ -135,25 +139,38 @@ export default function TestPage() {
       setTimeout(() => {
         setDirection(1);
         setCurrentIndex((prev) => prev + 1);
+        setTransitioning(false);
       }, 450);
     }
   }
 
   function handleBack() {
-    if (currentIndex > 0) {
+    if (currentIndex > 0 && !transitioning) {
+      setTransitioning(true);
       setDirection(-1);
       setStreak(0);
       setCurrentIndex((prev) => prev - 1);
+      setTimeout(() => setTransitioning(false), 400);
     }
   }
 
-  const encouragement: Record<number, string> = {
-    0: "Чудесно начало!",
-    4: "Вече си на половината!",
-    7: "Още малко!",
-    8: "Почти готово!",
-    9: "Последен въпрос!",
-  };
+  function getEncouragement(): string | null {
+    const answered = Object.keys(answers).length;
+    if (currentIndex === 0) return "Чудесно начало!";
+    if (currentIndex === 9) return "Последен въпрос!";
+    if (currentIndex === 8) return "Почти готово!";
+
+    // Personality-based hints after enough data
+    if (answered >= 3) {
+      const avg = Object.values(answers).reduce((a, b) => a + b, 0) / answered;
+      if (currentIndex === 4) return "Вече си на половината!";
+      if (currentIndex === 5 && avg > 3.5) return "Изглеждаш доста решителен/а!";
+      if (currentIndex === 5 && avg <= 3.5) return "Интересен профил се оформя...";
+      if (currentIndex === 7) return "Още малко!";
+    }
+
+    return `Въпрос ${currentIndex + 1} от ${questions.length}`;
+  }
 
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-12">
@@ -196,7 +213,7 @@ export default function TestPage() {
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.2 }}
               >
-                {encouragement[currentIndex] || `Въпрос ${currentIndex + 1}`}
+                {getEncouragement()}
               </motion.span>
             </AnimatePresence>
             <span className="text-muted-foreground">

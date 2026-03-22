@@ -38,7 +38,6 @@ export default function SignupPage() {
     setLoading(true);
     setError("");
 
-    // TODO: Supabase integration — for now, store locally and proceed
     try {
       const { data: user, error: userError } = await supabase
         .from("users")
@@ -77,6 +76,11 @@ export default function SignupPage() {
 
   if (!testData) return null;
 
+  function scrollToEmail() {
+    emailRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    setTimeout(() => emailRef.current?.focus(), 400);
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
       <motion.div
@@ -96,30 +100,27 @@ export default function SignupPage() {
         </div>
 
         <div className="rounded-2xl border border-border/60 bg-card p-8 shadow-sm">
+          {/* Title */}
           <div className="text-center">
             <h1 className="font-serif text-2xl font-semibold">
-              Твоят профил
+              Твоят начален анализ
             </h1>
           </div>
 
-          {/* Blurred radar chart */}
+          {/* Blurred radar chart with overlay */}
           <div className="relative mt-6 mb-2">
             <RadarChart scores={testData.scores} blurred />
 
-            {/* Overlay CTA on top of blurred chart — clicks scroll to email */}
             <motion.button
               className="absolute inset-0 flex cursor-pointer items-center justify-center"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.5, duration: 0.5 }}
-              onClick={() => {
-                emailRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-                setTimeout(() => emailRef.current?.focus(), 400);
-              }}
+              onClick={scrollToEmail}
             >
               <div className="rounded-xl bg-card/90 px-5 py-3 text-center shadow-lg backdrop-blur-sm transition-transform hover:scale-105">
                 <p className="text-sm font-medium text-foreground">
-                  Виж пълния си профил
+                  Виж пълния си анализ
                 </p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   Въведи имейла си по-долу
@@ -128,38 +129,47 @@ export default function SignupPage() {
             </motion.button>
           </div>
 
-          {/* CTA */}
-          <div className="mt-6 border-t border-border/40 pt-5">
-            <p className="text-center text-[15px] text-muted-foreground">
+          {/* Single-field form — minimal friction */}
+          <motion.div
+            className="mt-6 border-t border-border/40 pt-5"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
+          >
+            <p className="mb-4 text-center text-[15px] text-muted-foreground">
               Остави имейл и ще се свържем с теб за следващата стъпка.
             </p>
-          </div>
 
-          <form onSubmit={handleSubmit} className="mt-5 space-y-4">
-            <Input
-              ref={emailRef}
-              id="email"
-              type="email"
-              placeholder="Имейл адрес"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="rounded-lg"
-            />
-            {error && (
-              <p className="text-sm text-destructive">{error}</p>
-            )}
-            <Button
-              type="submit"
-              className="w-full rounded-full"
-              disabled={loading}
-            >
-              {loading ? "Изпращане..." : "Продължи към подбора"}
-            </Button>
-          </form>
-          <p className="mt-4 text-center text-xs text-muted-foreground">
-            Никога няма да споделим имейла ти. Без спам.
-          </p>
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <Input
+                ref={emailRef}
+                id="email"
+                type="email"
+                placeholder="Имейл адрес"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="rounded-lg py-5 text-base"
+              />
+              {error && (
+                <p className="text-sm text-destructive">{error}</p>
+              )}
+              <Button
+                type="submit"
+                className="w-full rounded-full py-5 text-base"
+                disabled={loading}
+              >
+                {loading ? "Изпращане..." : "Продължи"}
+              </Button>
+            </form>
+
+            {/* Trust signals */}
+            <div className="mt-4 flex items-center justify-center gap-4 text-xs text-muted-foreground/60">
+              <span>Без спам</span>
+              <span className="h-3 w-px bg-border" />
+              <span>Лични данни в безопасност</span>
+            </div>
+          </motion.div>
         </div>
       </motion.div>
     </main>
