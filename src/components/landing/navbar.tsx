@@ -23,18 +23,30 @@ export function Navbar() {
       }}
     >
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
-        <Link
-          href="/"
-          className="text-lg"
-        >
+        <Link href="/" className="text-lg">
           <Logo />
         </Link>
-        <Link
-          href="/test"
-          className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          Попълни теста &rarr;
-        </Link>
+
+        <div className="flex items-center gap-3">
+          <Link
+            href="/calculator"
+            className="hidden rounded-full border border-border/60 px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground sm:inline-block"
+          >
+            Калкулатор
+          </Link>
+          <Link
+            href="/faq"
+            className="hidden rounded-full border border-border/60 px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground sm:inline-block"
+          >
+            Въпроси
+          </Link>
+          <Link
+            href="/test"
+            className="rounded-full border border-primary/40 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
+          >
+            Попълни теста
+          </Link>
+        </div>
       </div>
     </motion.nav>
   );

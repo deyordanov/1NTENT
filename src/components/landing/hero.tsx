@@ -65,20 +65,7 @@ export function Hero() {
           </span>
         </motion.div>
 
-        {/* Scroll indicator — just a line, no text */}
-        <motion.div
-          className="mt-20"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.4 }}
-          transition={{ delay: 1.2, duration: 0.6 }}
-        >
-          <motion.div
-            animate={{ y: [0, 6, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <div className="h-10 w-px bg-foreground/20" />
-          </motion.div>
-        </motion.div>
+{/* scroll indicator removed */}
       </div>
     </section>
   );

@@ -9,8 +9,6 @@ import { computeScores } from "@/lib/scoring";
 import { Answers } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/logo";
 
 const scaleLabels = [
@@ -28,24 +26,26 @@ export default function TestPage() {
   const [direction, setDirection] = useState(1);
 
   const question = questions[currentIndex];
-  const progress = (currentIndex / questions.length) * 100;
+  const progress = ((currentIndex + 1) / questions.length) * 100;
   const currentAnswer = answers[question.id];
+  const isLast = currentIndex === questions.length - 1;
 
-  function handleSelect(value: string) {
-    setAnswers((prev) => ({ ...prev, [question.id]: parseInt(value) }));
-  }
+  function handleSelect(value: number) {
+    const updated = { ...answers, [question.id]: value };
+    setAnswers(updated);
 
-  function handleNext() {
-    if (currentIndex < questions.length - 1) {
-      setDirection(1);
-      setCurrentIndex((prev) => prev + 1);
-    } else {
-      const scores = computeScores(answers);
+    if (isLast) {
+      const scores = computeScores(updated);
       sessionStorage.setItem(
         "testData",
-        JSON.stringify({ answers, scores })
+        JSON.stringify({ answers: updated, scores })
       );
-      router.push("/signup");
+      setTimeout(() => router.push("/signup"), 400);
+    } else {
+      setTimeout(() => {
+        setDirection(1);
+        setCurrentIndex((prev) => prev + 1);
+      }, 300);
     }
   }
 
@@ -80,7 +80,7 @@ export default function TestPage() {
           <Progress value={progress} className="h-1.5" />
         </div>
 
-        {/* Question card with animation */}
+        {/* Question card */}
         <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card p-8 shadow-sm">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
@@ -95,50 +95,53 @@ export default function TestPage() {
                 {question.text}
               </h2>
 
-              <RadioGroup
-                value={currentAnswer?.toString()}
-                onValueChange={handleSelect}
-                className="space-y-3"
-              >
-                {scaleLabels.map((label, i) => (
-                  <div
-                    key={i}
-                    className="flex cursor-pointer items-center space-x-3 rounded-lg p-2 transition-colors hover:bg-muted/60"
-                    onClick={() => handleSelect((i + 1).toString())}
-                  >
-                    <RadioGroupItem
-                      value={(i + 1).toString()}
-                      id={`option-${i + 1}`}
-                    />
-                    <Label
-                      htmlFor={`option-${i + 1}`}
-                      className="cursor-pointer text-base"
+              <div className="space-y-2">
+                {scaleLabels.map((label, i) => {
+                  const value = i + 1;
+                  const isSelected = currentAnswer === value;
+
+                  return (
+                    <motion.button
+                      key={i}
+                      onClick={() => handleSelect(value)}
+                      className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left text-base transition-colors ${
+                        isSelected
+                          ? "border-primary bg-primary/5 text-foreground"
+                          : "border-border/40 hover:border-primary/30 hover:bg-muted/40"
+                      }`}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.98 }}
+                      transition={{ duration: 0.15 }}
                     >
-                      {label}
-                    </Label>
-                  </div>
-                ))}
-              </RadioGroup>
+                      <span
+                        className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full border-2 text-xs font-semibold transition-colors ${
+                          isSelected
+                            ? "border-primary bg-primary text-white"
+                            : "border-muted-foreground/30 text-muted-foreground/50"
+                        }`}
+                      >
+                        {value}
+                      </span>
+                      <span>{label}</span>
+                    </motion.button>
+                  );
+                })}
+              </div>
             </motion.div>
           </AnimatePresence>
 
-          <div className="mt-8 flex justify-between">
-            <Button
-              variant="outline"
-              onClick={handleBack}
-              disabled={currentIndex === 0}
-              className="rounded-full"
-            >
-              Назад
-            </Button>
-            <Button
-              onClick={handleNext}
-              disabled={currentAnswer === undefined}
-              className="rounded-full px-6"
-            >
-              {currentIndex < questions.length - 1 ? "Напред" : "Готово"}
-            </Button>
-          </div>
+          {/* Back button only */}
+          {currentIndex > 0 && (
+            <div className="mt-6 flex justify-start">
+              <Button
+                variant="ghost"
+                onClick={handleBack}
+                className="rounded-full text-muted-foreground"
+              >
+                &larr; Назад
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </main>

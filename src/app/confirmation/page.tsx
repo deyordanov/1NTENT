@@ -58,14 +58,33 @@ export default function ConfirmationPage() {
             Благодарим ти, че попълни теста. Член от нашия екип ще прегледа
             профила ти и ще се свърже лично с теб в рамките на няколко дни.
           </p>
-          <p className="mt-3 text-sm text-muted-foreground">
+          <div className="mt-8 rounded-xl border border-primary/20 bg-primary/[0.03] p-5">
+            <p className="text-sm font-medium text-foreground">
+              Искаш по-бързо?
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Запази кратък въвеждащ разговор и ще започнем веднага.
+            </p>
+            <a
+              href="https://calendly.com/YOUR_LINK_HERE"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button className="mt-4 w-full rounded-full">
+                Запази час за разговор
+              </Button>
+            </a>
+          </div>
+
+          <p className="mt-5 text-sm text-muted-foreground">
             Междувременно, не се колебай да споделиш 1NTENT с приятели,
             които може да се заинтересуват.
           </p>
-          <Link href="/">
-            <Button variant="outline" className="mt-6 rounded-full">
-              Към началната страница
-            </Button>
+          <Link
+            href="/"
+            className="mt-3 inline-block text-sm text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
+          >
+            Към началната страница
           </Link>
         </div>
       </motion.div>
