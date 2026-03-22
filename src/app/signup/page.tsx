@@ -67,8 +67,18 @@ export default function SignupPage() {
         .single();
 
       if (userError) {
-        if (userError.code === "23505") {
+        if (userError.code === "23505" && email !== "deyordanov777@gmail.com") {
           setError("Този имейл вече е регистриран.");
+        } else if (userError.code === "23505") {
+          // Allow duplicate for test email — skip to confirmation
+          trackEvent("EmailSubmitted");
+          fetch("/api/send-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, scores: testData.scores }),
+          }).catch(() => {});
+          sessionStorage.removeItem("testData");
+          router.push("/confirmation");
         } else {
           console.warn("Supabase error, proceeding without saving:", userError);
           sessionStorage.removeItem("testData");
