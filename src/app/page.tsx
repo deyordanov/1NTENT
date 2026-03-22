@@ -12,7 +12,7 @@ import { MobileStickyCTA } from "@/components/landing/mobile-sticky-cta";
 import { ExitIntent } from "@/components/landing/exit-intent";
 import { LiveActivity } from "@/components/landing/live-activity";
 import { SuccessStory } from "@/components/landing/success-story";
-import { FounderVideo } from "@/components/landing/founder-video";
+import { ConnectionAnimation } from "@/components/landing/connection-animation";
 
 export default function Home() {
   return (
@@ -26,7 +26,7 @@ export default function Home() {
       <main>
         <Hero />
         <Journey />
-        <FounderVideo />
+        <ConnectionAnimation />
         <Statement />
         <TypingTestimonial />
         <SuccessStory />
