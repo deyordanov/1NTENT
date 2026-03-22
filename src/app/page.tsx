@@ -11,7 +11,6 @@ import { CursorHearts } from "@/components/cursor-hearts";
 import { MobileStickyCTA } from "@/components/landing/mobile-sticky-cta";
 import { ExitIntent } from "@/components/landing/exit-intent";
 import { LiveActivity } from "@/components/landing/live-activity";
-import { SuccessStory } from "@/components/landing/success-story";
 import { ConnectionAnimation } from "@/components/landing/connection-animation";
 
 export default function Home() {
@@ -29,7 +28,6 @@ export default function Home() {
         <ConnectionAnimation />
         <Statement />
         <TypingTestimonial />
-        <SuccessStory />
         <CalculatorCTA />
         <CTAFooter />
       </main>

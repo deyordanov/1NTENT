@@ -10,15 +10,12 @@ function ProfileSilhouette({ flip }: { flip?: boolean }) {
       fill="none"
       className={`w-16 sm:w-20 ${flip ? "scale-x-[-1]" : ""}`}
     >
-      {/* Head */}
       <circle cx="40" cy="28" r="16" fill="currentColor" opacity="0.15" />
-      {/* Body */}
       <path
         d="M12 100 C12 72, 22 58, 40 58 C58 58, 68 72, 68 100"
         fill="currentColor"
         opacity="0.1"
       />
-      {/* Face hint */}
       <circle cx="40" cy="28" r="14" fill="currentColor" opacity="0.08" />
     </svg>
   );
@@ -34,7 +31,7 @@ export function ConnectionAnimation() {
         <div className="relative flex items-center justify-center py-12">
           {/* Left profile */}
           <motion.div
-            className="text-primary/60"
+            className="flex-shrink-0 text-primary/60"
             initial={{ x: -60, opacity: 0 }}
             animate={isInView ? { x: 0, opacity: 1 } : {}}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
@@ -42,23 +39,27 @@ export function ConnectionAnimation() {
             <ProfileSilhouette />
           </motion.div>
 
-          {/* Connection line + heart */}
-          <div className="relative mx-6 flex items-center sm:mx-10">
-            {/* Dashed line that draws in */}
+          {/* Connection area — fixed width, heart centered */}
+          <div className="relative mx-4 flex w-28 items-center justify-center sm:mx-8 sm:w-40">
+            {/* Dashed line */}
             <motion.div
-              className="h-px w-20 sm:w-32"
+              className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2"
               style={{
                 background:
-                  "repeating-linear-gradient(90deg, hsl(346, 77%, 50%) 0px, hsl(346, 77%, 50%) 4px, transparent 4px, transparent 8px)",
+                  "repeating-linear-gradient(90deg, hsl(346, 77%, 70%) 0px, hsl(346, 77%, 70%) 4px, transparent 4px, transparent 10px)",
               }}
               initial={{ scaleX: 0, opacity: 0 }}
               animate={isInView ? { scaleX: 1, opacity: 1 } : {}}
-              transition={{ duration: 0.6, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              transition={{
+                duration: 0.6,
+                delay: 0.5,
+                ease: [0.22, 1, 0.36, 1],
+              }}
             />
 
-            {/* Heart in center */}
+            {/* Heart */}
             <motion.div
-              className="absolute left-1/2 -translate-x-1/2"
+              className="relative z-10 rounded-full bg-background p-1"
               initial={{ scale: 0, opacity: 0 }}
               animate={isInView ? { scale: 1, opacity: 1 } : {}}
               transition={{
@@ -85,16 +86,13 @@ export function ConnectionAnimation() {
               </motion.svg>
             </motion.div>
 
-            {/* Pulse rings around heart */}
+            {/* Pulse ring */}
             <motion.div
-              className="absolute left-1/2 -translate-x-1/2"
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
               initial={{ scale: 0, opacity: 0 }}
               animate={
                 isInView
-                  ? {
-                      scale: [1, 2.5],
-                      opacity: [0.3, 0],
-                    }
+                  ? { scale: [1, 2.5], opacity: [0.3, 0] }
                   : {}
               }
               transition={{
@@ -111,7 +109,7 @@ export function ConnectionAnimation() {
 
           {/* Right profile */}
           <motion.div
-            className="text-primary/60"
+            className="flex-shrink-0 text-primary/60"
             initial={{ x: 60, opacity: 0 }}
             animate={isInView ? { x: 0, opacity: 1 } : {}}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
@@ -122,7 +120,7 @@ export function ConnectionAnimation() {
 
         {/* Caption */}
         <motion.p
-          className="text-center text-sm text-muted-foreground"
+          className="text-center font-serif text-lg italic text-muted-foreground/70 sm:text-xl"
           initial={{ opacity: 0, y: 10 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 1.2 }}
