@@ -12,10 +12,15 @@ import { MobileStickyCTA } from "@/components/landing/mobile-sticky-cta";
 import { ExitIntent } from "@/components/landing/exit-intent";
 import { LiveActivity } from "@/components/landing/live-activity";
 import { ConnectionAnimation } from "@/components/landing/connection-animation";
+import { ReferralCapture } from "@/components/referral-capture";
+import { Suspense } from "react";
 
 export default function Home() {
   return (
     <>
+      <Suspense fallback={null}>
+        <ReferralCapture />
+      </Suspense>
       <CursorHearts />
       <MobileStickyCTA />
       <ExitIntent />

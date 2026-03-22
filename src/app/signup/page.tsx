@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -52,6 +52,15 @@ export default function SignupPage() {
     setTestData(JSON.parse(stored));
   }, [router]);
 
+  const generateCode = useCallback(() => {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let code = "";
+    for (let i = 0; i < 6; i++) {
+      code += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return code;
+  }, []);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!testData) return;
@@ -59,29 +68,28 @@ export default function SignupPage() {
     setLoading(true);
     setError("");
 
+    const referralCode = generateCode();
+    const referredBy = sessionStorage.getItem("1ntent_ref") || null;
+
     try {
       const { data: user, error: userError } = await supabase
         .from("users")
-        .insert({ email })
-        .select("id")
+        .insert({
+          email,
+          referral_code: referralCode,
+          referred_by: referredBy,
+        })
+        .select("id, referral_code")
         .single();
 
       if (userError) {
-        if (userError.code === "23505" && email !== "deyordanov777@gmail.com") {
+        if (userError.code === "23505") {
           setError("Този имейл вече е регистриран.");
-        } else if (userError.code === "23505") {
-          // Allow duplicate for test email — skip to confirmation
-          trackEvent("EmailSubmitted");
-          fetch("/api/send-email", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, scores: testData.scores }),
-          }).catch(() => {});
-          sessionStorage.removeItem("testData");
-          router.push("/confirmation");
         } else {
           console.warn("Supabase error, proceeding without saving:", userError);
           sessionStorage.removeItem("testData");
+          sessionStorage.removeItem("1ntent_ref");
+          sessionStorage.setItem("1ntent_referral_code", referralCode);
           router.push("/confirmation");
         }
         setLoading(false);
@@ -97,13 +105,16 @@ export default function SignupPage() {
         });
 
       trackEvent("EmailSubmitted");
-      // Send confirmation email with scores (fire-and-forget)
       fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, scores: testData.scores }),
       }).catch(() => {});
+
+      // Pass the real referral code to the confirmation page
       sessionStorage.removeItem("testData");
+      sessionStorage.removeItem("1ntent_ref");
+      sessionStorage.setItem("1ntent_referral_code", user.referral_code);
       router.push("/confirmation");
     } catch {
       console.warn("Supabase not available, proceeding without saving");
@@ -114,6 +125,8 @@ export default function SignupPage() {
         body: JSON.stringify({ email, scores: testData.scores }),
       }).catch(() => {});
       sessionStorage.removeItem("testData");
+      sessionStorage.removeItem("1ntent_ref");
+      sessionStorage.setItem("1ntent_referral_code", referralCode);
       router.push("/confirmation");
     }
   }

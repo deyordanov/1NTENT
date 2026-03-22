@@ -63,22 +63,20 @@ function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text);
 }
 
-function generateReferralCode(): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let code = "";
-  for (let i = 0; i < 6; i++) {
-    code += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return code;
-}
-
 export default function ConfirmationPage() {
   const [confetti, setConfetti] = useState<number[]>([]);
   const [copied, setCopied] = useState(false);
-  const [referralCode] = useState(() => generateReferralCode());
+  const [referralCode, setReferralCode] = useState("");
   const [referralCopied, setReferralCopied] = useState(false);
 
   useEffect(() => {
+    // Get referral code from signup flow
+    const storedCode = sessionStorage.getItem("1ntent_referral_code");
+    if (storedCode) {
+      setReferralCode(storedCode);
+      sessionStorage.removeItem("1ntent_referral_code");
+    }
+
     const pieces = Array.from({ length: CONFETTI_COUNT }, (_, i) => i);
     setConfetti(pieces);
     playChime();
