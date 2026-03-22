@@ -87,11 +87,11 @@ export default function SignupPage() {
         });
 
       trackEvent("EmailSubmitted");
-      // Send confirmation email (fire-and-forget)
+      // Send confirmation email with scores (fire-and-forget)
       fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, scores: testData.scores }),
       }).catch(() => {});
       sessionStorage.removeItem("testData");
       router.push("/confirmation");
@@ -101,7 +101,7 @@ export default function SignupPage() {
       fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, scores: testData.scores }),
       }).catch(() => {});
       sessionStorage.removeItem("testData");
       router.push("/confirmation");
