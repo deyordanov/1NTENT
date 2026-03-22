@@ -23,6 +23,8 @@ export default function SignupPage() {
   } | null>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const [timeLeft, setTimeLeft] = useState("");
+  const [summary, setSummary] = useState("");
+  const [summaryLoading, setSummaryLoading] = useState(false);
 
   // Countdown - results expire in ~15 minutes from page load
   const expireTime = useMemo(() => Date.now() + 15 * 60 * 1000, []);
@@ -49,7 +51,22 @@ export default function SignupPage() {
       router.push("/test");
       return;
     }
-    setTestData(JSON.parse(stored));
+    const parsed = JSON.parse(stored);
+    setTestData(parsed);
+
+    // Fetch AI personality summary
+    setSummaryLoading(true);
+    fetch("/api/personality-summary", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ scores: parsed.scores }),
+    })
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => {
+        if (data?.summary) setSummary(data.summary);
+      })
+      .catch(() => {})
+      .finally(() => setSummaryLoading(false));
   }, [router]);
 
   const generateCode = useCallback(() => {
@@ -185,6 +202,28 @@ export default function SignupPage() {
               </div>
             </motion.button>
           </div>
+
+          {/* AI personality insight */}
+          {(summary || summaryLoading) && (
+            <motion.div
+              className="mt-4 rounded-xl bg-primary/[0.03] px-5 py-4"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.5 }}
+            >
+              {summaryLoading ? (
+                <div className="flex items-center justify-center gap-2 py-2">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary/40" />
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary/40" style={{ animationDelay: "0.2s" }} />
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary/40" style={{ animationDelay: "0.4s" }} />
+                </div>
+              ) : (
+                <p className="text-center text-[14px] italic leading-relaxed text-muted-foreground">
+                  &ldquo;{summary}&rdquo;
+                </p>
+              )}
+            </motion.div>
+          )}
 
           {/* Single-field form — minimal friction */}
           <motion.div
