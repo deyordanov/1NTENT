@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { trackEvent } from "@/lib/analytics";
 
 export function MobileStickyCTA() {
   const [visible, setVisible] = useState(false);
@@ -28,7 +29,7 @@ export function MobileStickyCTA() {
           exit={{ y: 80, opacity: 0 }}
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         >
-          <Link href="/test" className="block">
+          <Link href="/test" className="block" onClick={() => trackEvent("MobileCTAClicked")}>
             <Button className="w-full rounded-full py-5 text-base shadow-lg shadow-primary/20">
               Попълни теста
             </Button>

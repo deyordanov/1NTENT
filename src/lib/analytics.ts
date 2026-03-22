@@ -1,5 +1,15 @@
 // Plausible custom event tracking
-// Events: TestStarted, TestCompleted, EmailSubmitted, CalendlyClicked
+// Events:
+//   HeroVariant (prop: variant A/B/C) — which headline shown
+//   TestStarted — first question answered
+//   TestCompleted — all 10 questions answered
+//   EmailSubmitted — email form submitted
+//   CalendlyClicked — clicked "book a call"
+//   ExitIntentShown — exit popup appeared
+//   ExitIntentClicked — clicked CTA in exit popup
+//   MobileCTAClicked — clicked mobile sticky CTA
+//   ReferralCopied — copied referral link
+//   ReferralShared (prop: channel) — shared via WhatsApp/Viber/other
 
 declare global {
   interface Window {

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { trackEvent } from "@/lib/analytics";
 
 export function ExitIntent() {
   const [show, setShow] = useState(false);
@@ -27,6 +28,7 @@ export function ExitIntent() {
       if (e.relatedTarget === null && e.clientY < 50) {
         activeRef.current = false;
         setShow(true);
+        trackEvent("ExitIntentShown");
       }
     }
 
@@ -68,7 +70,7 @@ export function ExitIntent() {
               10 въпроса, под 3 минути, без регистрация.
             </p>
             <div className="mt-6 flex flex-col gap-2">
-              <Link href="/test" onClick={dismiss}>
+              <Link href="/test" onClick={() => { dismiss(); trackEvent("ExitIntentClicked"); }}>
                 <Button className="w-full rounded-full py-5 text-base">
                   Попълни теста
                 </Button>
