@@ -35,8 +35,8 @@ export async function POST(request: Request) {
       html: `
         <div style="font-family: 'Georgia', serif; max-width: 480px; margin: 0 auto; padding: 40px 24px;">
           <div style="text-align: center; padding: 20px 0 10px;">
-            <h1 style="font-size: 32px; color: #1a1a1a; margin: 0; letter-spacing: -1px; font-family: Georgia, serif;">
-              <span style="color: #c8274d; font-weight: 700;">1</span><span style="font-weight: 700;">NTENT</span>
+            <h1 style="font-size: 32px; color: #1a1a1a; margin: 0; letter-spacing: -1px; font-family: Arial, Helvetica, sans-serif; font-weight: 700;">
+              <span style="color: #c8274d; font-size: 32px;">1</span><span style="font-size: 32px;">NTENT</span>
             </h1>
             <p style="font-size: 11px; color: #bbb; margin: 4px 0 0; letter-spacing: 3px; text-transform: uppercase;">
               Мачмейкинг с намерение
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
           </div>
 
           <p style="font-size: 14px; line-height: 1.6; color: #888;">
-            Междувременно, сподели <span style="font-weight:700;"><span style="color:#c8274d;">1</span>NTENT</span> с приятели, които може да се заинтересуват.
+            Междувременно, сподели <span style="font-weight:700; font-family: Arial, Helvetica, sans-serif;"><span style="color:#c8274d;">1</span>NTENT</span> с приятели, които може да се заинтересуват.
           </p>
 
           <hr style="border: none; border-top: 1px solid #eee; margin: 32px 0 16px;" />
