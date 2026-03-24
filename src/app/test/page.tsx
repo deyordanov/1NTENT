@@ -63,6 +63,7 @@ export default function TestPage() {
   const [selectedFlash, setSelectedFlash] = useState<string | number | null>(null);
   const [streak, setStreak] = useState(0);
   const [transitioning, setTransitioning] = useState(false);
+  const [openText, setOpenText] = useState("");
   const [showResume, setShowResume] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const currentIndexRef = useRef(currentIndex);
@@ -372,6 +373,34 @@ export default function TestPage() {
                         </motion.button>
                       );
                     })}
+                  </div>
+                )}
+
+                {/* Open-ended question */}
+                {question.type === "open" && (
+                  <div className="space-y-4">
+                    <textarea
+                      value={openText}
+                      onChange={(e) => setOpenText(e.target.value)}
+                      placeholder={question.placeholder || "Напиши тук..."}
+                      className="w-full resize-none rounded-xl border border-border/40 bg-transparent px-4 py-3.5 text-base leading-relaxed placeholder:text-muted-foreground/40 focus:border-primary/40 focus:outline-none focus:ring-1 focus:ring-primary/20"
+                      rows={3}
+                      autoFocus
+                    />
+                    <motion.button
+                      onClick={(e) => {
+                        if (openText.trim().length > 0) {
+                          handleSelectAnswer(openText.trim(), e);
+                          setOpenText("");
+                        }
+                      }}
+                      disabled={openText.trim().length === 0}
+                      className="w-full rounded-full bg-primary px-6 py-3 text-sm font-medium text-white transition-all hover:bg-primary/90 disabled:opacity-40 disabled:hover:bg-primary"
+                      whileHover={{ scale: openText.trim().length > 0 ? 1.02 : 1 }}
+                      whileTap={{ scale: openText.trim().length > 0 ? 0.98 : 1 }}
+                    >
+                      {isLast ? "Готово" : "Продължи"}
+                    </motion.button>
                   </div>
                 )}
 

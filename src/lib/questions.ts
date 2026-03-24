@@ -65,4 +65,10 @@ export const questions: Question[] = [
       { label: "Страст, химия и привличане", value: "passion" },
     ],
   },
+  {
+    id: "q7",
+    text: "Довърши изречението: 'Търся човек, който...'",
+    type: "open",
+    placeholder: "Напиши с няколко думи...",
+  },
 ];

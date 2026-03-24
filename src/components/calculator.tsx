@@ -303,7 +303,7 @@ export function Calculator({ compact = false }: { compact?: boolean }) {
             </motion.div>
           </Link>
           <p className="mt-3 text-xs text-muted-foreground/60">
-            6 въпроса. Под 2 минути. Без повече безцелни срещи.
+            7 въпроса. Под 3 минути. Без повече безцелни срещи.
           </p>
         </div>
       </motion.div>

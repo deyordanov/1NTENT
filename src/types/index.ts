@@ -21,7 +21,14 @@ export interface ScaleQuestion {
   maxLabel?: string;
 }
 
-export type Question = MultipleChoiceQuestion | ScaleQuestion;
+export interface OpenQuestion {
+  id: string;
+  text: string;
+  type: "open";
+  placeholder?: string;
+}
+
+export type Question = MultipleChoiceQuestion | ScaleQuestion | OpenQuestion;
 
 // Answers: question id → selected value (string for choice, number for scale)
 export type Answers = Record<string, string | number>;
