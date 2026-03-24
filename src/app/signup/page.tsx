@@ -156,7 +156,7 @@ export default function SignupPage() {
       fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, profile: testData.profile }),
+        body: JSON.stringify({ email, profile: testData.profile, radarScores: testData.radarScores }),
       }).catch(() => {});
       await saveShareResult(testData.profile, testData.radarScores);
 
@@ -172,7 +172,7 @@ export default function SignupPage() {
       fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, profile: testData.profile }),
+        body: JSON.stringify({ email, profile: testData.profile, radarScores: testData.radarScores }),
       }).catch(() => {});
       await saveShareResult(testData.profile, testData.radarScores);
       sessionStorage.removeItem("testData");
