@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "1NTENT - Мачмейкинг, базиран на личността",
   description:
     "Свързваме те с правилния човек, базирайки се на това кой наистина си. Попълни кратък тест за личността и ние ще намерим някой, който наистина те допълва.",
-  metadataBase: new URL("https://1ntent.vercel.app"),
+  metadataBase: new URL("https://1ntent.eu"),
   openGraph: {
     title: "1NTENT - Намираме човека, който ти подхожда",
     description:

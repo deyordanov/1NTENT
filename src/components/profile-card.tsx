@@ -283,7 +283,7 @@ export function ProfileCard({ profile, scores, onDownload }: ProfileCardProps) {
     ctx.fillText("Открий своя профил на", w / 2, h - 40);
     ctx.font = "bold 14px -apple-system, BlinkMacSystemFont, sans-serif";
     ctx.fillStyle = "rgba(220, 50, 80, 0.7)";
-    ctx.fillText("1ntent.vercel.app", w / 2, h - 22);
+    ctx.fillText("1ntent.eu", w / 2, h - 22);
 
     // Bottom accent line
     ctx.fillStyle = lineGrad;

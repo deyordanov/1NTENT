@@ -94,7 +94,7 @@ export default function ConfirmationPage() {
     }
     const shareId = sessionStorage.getItem("1ntent_share_id");
     if (shareId) {
-      const origin = typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg";
+      const origin = typeof window !== "undefined" ? window.location.origin : "https://1ntent.eu";
       setShareUrl(`${origin}/results/${shareId}`);
       sessionStorage.removeItem("1ntent_share_id");
     }
@@ -107,7 +107,7 @@ export default function ConfirmationPage() {
   }, []);
 
   function handleShare() {
-    const url = shareUrl || (typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg");
+    const url = shareUrl || (typeof window !== "undefined" ? window.location.origin : "https://1ntent.eu");
     if (navigator.share) {
       navigator.share({ title: "1NTENT", text: shareUrl ? "Виж моя личностен профил!" : "Открий човека, който наистина ти подхожда.", url });
     } else {
@@ -214,7 +214,7 @@ export default function ConfirmationPage() {
             {/* Copy link button — full width, prominent */}
             <button
               onClick={() => {
-                const origin = typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg";
+                const origin = typeof window !== "undefined" ? window.location.origin : "https://1ntent.eu";
                 const url = shareUrl || (referralCode ? `${origin}?ref=${referralCode}` : `${origin}/test`);
                 copyToClipboard(url);
                 setReferralCopied(true);
@@ -234,7 +234,7 @@ export default function ConfirmationPage() {
                 href={`https://wa.me/?text=${encodeURIComponent(
                   shareUrl
                     ? `Виж моя личностен профил и попълни своя тест! ${shareUrl}`
-                    : `Открий кой наистина ти подхожда ${typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg"}/test`
+                    : `Открий кой наистина ти подхожда ${typeof window !== "undefined" ? window.location.origin : "https://1ntent.eu"}/test`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -248,7 +248,7 @@ export default function ConfirmationPage() {
                 href={`viber://forward?text=${encodeURIComponent(
                   shareUrl
                     ? `Виж моя личностен профил и попълни своя тест! ${shareUrl}`
-                    : `Открий кой наистина ти подхожда ${typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg"}/test`
+                    : `Открий кой наистина ти подхожда ${typeof window !== "undefined" ? window.location.origin : "https://1ntent.eu"}/test`
                 )}`}
                 onClick={() => trackEvent("ReferralShared", { channel: "viber" })}
                 className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#7360F2] px-3 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
