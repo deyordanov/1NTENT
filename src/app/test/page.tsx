@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import { questions } from "@/lib/questions";
-import { computeProfile } from "@/lib/scoring";
+import { computeProfile, computeRadarScores } from "@/lib/scoring";
 import { Answers } from "@/types";
 import { Logo } from "@/components/logo";
 import { trackEvent } from "@/lib/analytics";
@@ -175,9 +175,10 @@ export default function TestPage() {
 
     if (isLast) {
       const profile = computeProfile(updated);
+      const radarScores = computeRadarScores(updated);
       sessionStorage.setItem(
         "testData",
-        JSON.stringify({ answers: updated, profile })
+        JSON.stringify({ answers: updated, profile, radarScores })
       );
       localStorage.removeItem("1ntent_test_progress");
       setTimeout(() => router.push("/signup"), 600);

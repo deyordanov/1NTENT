@@ -6,9 +6,11 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { Answers, ProfileResult } from "@/types";
+import { RadarScores } from "@/lib/scoring";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/logo";
+import { RadarChart } from "@/components/radar-chart";
 import { trackEvent } from "@/lib/analytics";
 
 export default function SignupPage() {
@@ -19,6 +21,7 @@ export default function SignupPage() {
   const [testData, setTestData] = useState<{
     answers: Answers;
     profile: ProfileResult;
+    radarScores: RadarScores;
   } | null>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const [timeLeft, setTimeLeft] = useState("");
@@ -131,7 +134,7 @@ export default function SignupPage() {
 
   if (!testData) return null;
 
-  const { profile } = testData;
+  const { profile, radarScores } = testData;
 
   function scrollToEmail() {
     emailRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -187,9 +190,19 @@ export default function SignupPage() {
             </motion.p>
           </div>
 
+          {/* Radar chart — blurred */}
+          <motion.div
+            className="relative mt-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            <RadarChart scores={radarScores} blurred />
+          </motion.div>
+
           {/* Blurred description — teaser */}
           <motion.div
-            className="relative mt-6"
+            className="relative mt-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7 }}
