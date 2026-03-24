@@ -128,7 +128,7 @@ function getHoursComparison(annualHours: number): string {
     `${workDays} дни. Можеше да научиш нов език за това време.`,
   ], annualHours);
   if (workDays >= 10) return pick([
-    `${workDays} пълни работни дни, прекарани в дейтинг приложения.`,
+    `${workDays} пълни работни дни, прекарани в безцелни запознанства.`,
     `${workDays} дни. Цяла ваканция, която никога няма да върнеш.`,
   ], annualHours);
   return pick([
@@ -150,18 +150,18 @@ export function Calculator({ compact = false }: { compact?: boolean }) {
       {/* Inputs */}
       <div className="space-y-4">
         <SliderInput
-          label="Колко печелиш на час"
+          label="Колко изкарваш на час"
           value={hourlyRate}
           onChange={setHourlyRate}
-          min={25}
+          min={0}
           max={500}
           step={25}
           displayValue={`€${hourlyRate}`}
-          minLabel="€25"
+          minLabel="€0"
           maxLabel="€500+"
         />
         <SliderInput
-          label="Часове седмично в дейтинг приложения"
+          label="Часове на седмица за безцелни запознанства"
           value={hoursPerWeek}
           onChange={setHoursPerWeek}
           min={1}
@@ -182,15 +182,25 @@ export function Calculator({ compact = false }: { compact?: boolean }) {
         {compact ? (
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
-              Губиш приблизително
+              Всяка година губиш
             </p>
-            <AnimatedNumber
-              value={annualCost}
-              prefix="€"
-              className="block font-serif text-5xl font-semibold text-primary sm:text-6xl"
-            />
+            {annualCost > 0 ? (
+              <AnimatedNumber
+                value={annualCost}
+                prefix="€"
+                className="block font-serif text-5xl font-semibold text-primary sm:text-6xl"
+              />
+            ) : (
+              <AnimatedNumber
+                value={annualHours}
+                suffix=" часа"
+                className="block font-serif text-5xl font-semibold text-primary sm:text-6xl"
+              />
+            )}
             <p className="mt-1 text-sm text-muted-foreground">
-              годишно за запознанства, които не водят до нищо
+              {annualCost > 0
+                ? "за запознанства, които не водят до нищо"
+                : "от живота си за запознанства без резултат"}
             </p>
             <p className="mt-4 text-sm text-muted-foreground/80">
               Ами ако един тест замени всичко това с едно единствено,
@@ -209,15 +219,23 @@ export function Calculator({ compact = false }: { compact?: boolean }) {
             >
               <div className="relative z-10">
                 <p className="mb-1 text-xs font-medium uppercase tracking-widest text-white/60">
-                  Годишна цена на случайното запознанство
+                  {annualCost > 0 ? "Цената на безцелното запознанство" : "Загубеното ти време"}
                 </p>
-                <AnimatedNumber
-                  value={annualCost}
-                  prefix="€"
-                  className="block font-serif text-5xl font-bold text-white sm:text-6xl"
-                />
+                {annualCost > 0 ? (
+                  <AnimatedNumber
+                    value={annualCost}
+                    prefix="€"
+                    className="block font-serif text-5xl font-bold text-white sm:text-6xl"
+                  />
+                ) : (
+                  <AnimatedNumber
+                    value={annualHours}
+                    suffix=" часа"
+                    className="block font-serif text-5xl font-bold text-white sm:text-6xl"
+                  />
+                )}
                 <p className="mt-4 text-sm leading-relaxed text-white/80">
-                  {getComparison(annualCost)}
+                  {annualCost > 0 ? getComparison(annualCost) : getHoursComparison(annualHours)}
                 </p>
               </div>
               {/* Decorative circles */}
@@ -285,7 +303,7 @@ export function Calculator({ compact = false }: { compact?: boolean }) {
             </motion.div>
           </Link>
           <p className="mt-3 text-xs text-muted-foreground/60">
-            5 въпроса. Под 2 минути. Без повече безцелни срещи.
+            10 въпроса. Под 3 минути. Без повече безцелни срещи.
           </p>
         </div>
       </motion.div>

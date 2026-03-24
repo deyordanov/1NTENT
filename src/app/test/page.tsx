@@ -187,7 +187,7 @@ export default function TestPage() {
     const particleCount = Math.min(3 + streak, 8) + (value >= 4 ? 2 : 0);
     spawnParticles(e, particleCount);
 
-    setTimeout(() => setSelectedFlash(null), 400);
+    setTimeout(() => setSelectedFlash(null), 300);
 
     if (isLast) {
       const scores = computeScores(updated);
@@ -205,6 +205,7 @@ export default function TestPage() {
         JSON.stringify({ answers: updated, index: nextIndex })
       );
       setTimeout(() => {
+        setSelectedFlash(null);
         setDirection(1);
         setCurrentIndex((prev) => prev + 1);
         setTransitioning(false);
@@ -215,6 +216,7 @@ export default function TestPage() {
   function handleBack() {
     if (currentIndex > 0 && !transitioning) {
       setTransitioning(true);
+      setSelectedFlash(null);
       setDirection(-1);
       setStreak(0);
       setCurrentIndex((prev) => prev - 1);

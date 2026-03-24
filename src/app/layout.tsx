@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { FloatingBlobs } from "@/components/landing/floating-blobs";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -52,6 +53,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen antialiased font-sans">
+        <FloatingBlobs />
         {children}
       </body>
     </html>
