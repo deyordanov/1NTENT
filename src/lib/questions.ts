@@ -30,7 +30,7 @@ export const questions: Question[] = [
     min: 1,
     max: 5,
     minLabel: "Не съвсем",
-    maxLabel: "Напълно готов/а",
+    maxLabel: "Напълно!",
   },
   {
     id: "q4",

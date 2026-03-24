@@ -41,8 +41,8 @@ export function RadarChart({ scores, blurred = false }: RadarChartProps) {
   return (
     <div className={`relative ${blurred ? "select-none" : ""}`}>
       <svg
-        viewBox="0 0 300 300"
-        className="mx-auto w-full max-w-[280px]"
+        viewBox="-20 -20 340 340"
+        className="mx-auto w-full max-w-[300px]"
         style={blurred ? { filter: "blur(6px)" } : undefined}
       >
         {/* Grid rings */}
