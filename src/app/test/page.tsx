@@ -337,7 +337,7 @@ export default function TestPage() {
                 {question.type === "choice" && (
                   <div className="space-y-2.5">
                     {question.options.map((option, i) => {
-                      const isSelected = currentAnswer === option.value;
+                      const isSelected = !transitioning && currentAnswer === option.value;
                       const isFlashing = selectedFlash === option.value;
 
                       return (
@@ -421,7 +421,7 @@ export default function TestPage() {
                   <div className="space-y-2.5">
                     {Array.from({ length: question.max - question.min + 1 }, (_, i) => {
                       const value = question.min + i;
-                      const isSelected = currentAnswer === value;
+                      const isSelected = !transitioning && currentAnswer === value;
                       const isFlashing = selectedFlash === value;
 
                       const scaleText =

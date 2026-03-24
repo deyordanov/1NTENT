@@ -237,7 +237,7 @@ export default function SharedResultPage() {
           </Link>
         </div>
 
-        <div className="relative rounded-2xl border border-border/60 bg-card/95 p-8 shadow-lg backdrop-blur-sm">
+        <div className="relative rounded-2xl border border-border/60 bg-card/95 p-5 shadow-lg backdrop-blur-sm sm:p-8">
           {/* Top accent */}
           <div className="absolute inset-x-0 top-0 h-1 rounded-t-2xl bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 

@@ -56,7 +56,7 @@ export function RadarChart({ scores, blurred = false }: RadarChartProps) {
     <div className={`relative ${blurred ? "select-none" : ""}`}>
       {/* Chart container with padding for labels */}
       <div
-        className="relative mx-auto w-full max-w-[400px] px-8 py-6"
+        className="relative mx-auto w-full max-w-[400px] px-12 py-6 sm:px-8"
         style={blurred ? { filter: "blur(6px)" } : undefined}
       >
         {/* SVG chart */}
@@ -227,10 +227,10 @@ export function RadarChart({ scores, blurred = false }: RadarChartProps) {
               animate={{ opacity: blurred ? 0.5 : 1 }}
               transition={{ duration: 0.4, delay: 0.9 + i * 0.08 }}
             >
-              <p className="text-[11px] font-semibold tracking-wide text-muted-foreground/80">
+              <p className="text-[9px] font-semibold tracking-wide text-muted-foreground/80 sm:text-[11px]">
                 {radarLabels[dim]}
               </p>
-              <p className="text-sm font-bold text-primary">
+              <p className="text-xs font-bold text-primary sm:text-sm">
                 {blurred ? "••" : `${score}%`}
               </p>
             </motion.div>
