@@ -6,20 +6,27 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
-    const { email, profile, radarImage } = (await request.json()) as {
+    const { email, profile, shareId } = (await request.json()) as {
       email: string;
       profile?: ProfileResult;
-      radarImage?: string; // base64 PNG
+      shareId?: string;
     };
 
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    const radarChartHtml = radarImage
+    const resultsLink = shareId
+      ? `https://1ntent.eu/results/${shareId}?own=true`
+      : "";
+
+    const resultsButtonHtml = resultsLink
       ? `
-          <div style="text-align: center; margin: 20px 0 8px;">
-            <img src="cid:radar-chart" alt="Твоят профил" width="360" height="360" style="max-width: 100%; height: auto; border-radius: 12px;" />
+          <div style="text-align: center; margin: 20px 0;">
+            <a href="${resultsLink}"
+               style="background-color: #1a1a1a; color: white; padding: 12px 28px; border-radius: 50px; text-decoration: none; font-size: 14px; font-weight: 500; display: inline-block;">
+              Виж пълния си профил
+            </a>
           </div>
         `
       : "";
@@ -30,21 +37,11 @@ export async function POST(request: Request) {
             <div style="font-size: 48px; margin-bottom: 12px;">${profile.emoji}</div>
             <h2 style="font-size: 22px; color: #1a1a1a; margin: 0 0 4px;">${profile.title}</h2>
             <p style="font-size: 13px; color: #999; margin: 0 0 16px; font-style: italic;">${profile.subtitle}</p>
-            ${radarChartHtml}
-            <p style="font-size: 15px; line-height: 1.6; color: #555; margin: 0;">${profile.description}</p>
+            <p style="font-size: 15px; line-height: 1.6; color: #555; margin: 0 0 16px;">${profile.description}</p>
+            ${resultsButtonHtml}
           </div>
         `
       : "";
-
-    const attachments = radarImage
-      ? [
-          {
-            filename: "radar-chart.png",
-            content: Buffer.from(radarImage, "base64"),
-            cid: "radar-chart",
-          },
-        ]
-      : [];
 
     await resend.emails.send({
       from: "1NTENT <hello@1ntent.eu>",
@@ -52,7 +49,6 @@ export async function POST(request: Request) {
       subject: profile
         ? `Ти си "${profile.title}": ето какво означава това`
         : "Благодарим за теста!",
-      attachments,
       html: `
         <div style="font-family: 'Georgia', serif; max-width: 480px; margin: 0 auto; padding: 40px 24px;">
           <div style="text-align: center; padding: 20px 0 10px;">

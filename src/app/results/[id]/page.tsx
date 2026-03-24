@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { createClient } from "@supabase/supabase-js";
@@ -18,7 +18,9 @@ const supabase = createClient(
 
 export default function SharedResultPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const id = params.id as string;
+  const isOwn = searchParams.get("own") === "true";
 
   const [profile, setProfile] = useState<ProfileResult | null>(null);
   const [radarScores, setRadarScores] = useState<RadarScores | null>(null);
@@ -137,7 +139,7 @@ export default function SharedResultPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            Споделен профил
+            {isOwn ? "Твоят профил" : "Споделен профил"}
           </motion.p>
 
           {/* Profile */}
@@ -213,14 +215,57 @@ export default function SharedResultPage() {
             transition={{ delay: 1, duration: 0.6 }}
           />
 
-          {/* CTA — compatibility-aware */}
+          {/* CTA — context-aware */}
           <motion.div
             className="pt-6 text-center"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.1 }}
           >
-            {compatibility !== null ? (
+            {isOwn ? (
+              /* Owner viewing their own results from email */
+              <>
+                <p className="mb-4 font-serif text-lg font-semibold">
+                  Твоят{" "}
+                  <span className="italic text-primary">пълен профил</span>
+                </p>
+                <p className="mb-5 text-sm text-muted-foreground">
+                  Сподели с приятел и вижте колко сте съвместими
+                </p>
+                <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+                  <a
+                    href={`https://wa.me/?text=${encodeURIComponent(`Виж моя профил и провери колко сме съвместими: https://1ntent.eu/results/${id}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+                      <Button variant="outline" className="w-full rounded-full px-6 py-5 sm:w-auto">
+                        Сподели в WhatsApp
+                      </Button>
+                    </motion.div>
+                  </a>
+                  <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+                    <Button
+                      variant="outline"
+                      className="w-full rounded-full px-6 py-5 sm:w-auto"
+                      onClick={() => {
+                        const url = `https://1ntent.eu/results/${id}`;
+                        navigator.clipboard?.writeText(url).catch(() => {
+                          const input = document.createElement("input");
+                          input.value = url;
+                          document.body.appendChild(input);
+                          input.select();
+                          document.execCommand("copy");
+                          document.body.removeChild(input);
+                        });
+                      }}
+                    >
+                      Копирай линк
+                    </Button>
+                  </motion.div>
+                </div>
+              </>
+            ) : compatibility !== null ? (
               /* Visitor already took the test — show compatibility */
               <>
                 <p className="mb-2 text-sm text-muted-foreground">

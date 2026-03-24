@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/logo";
 import { RadarChart } from "@/components/radar-chart";
 import { trackEvent } from "@/lib/analytics";
-import { generateRadarImage, getBase64FromDataUrl } from "@/lib/generate-radar-image";
+
 
 export default function SignupPage() {
   const router = useRouter();
@@ -91,7 +91,7 @@ export default function SignupPage() {
     return code;
   }, []);
 
-  async function saveShareResult(profile: ProfileResult, radarScores: RadarScores) {
+  async function saveShareResult(profile: ProfileResult, radarScores: RadarScores): Promise<string | null> {
     try {
       const res = await fetch("/api/share-result", {
         method: "POST",
@@ -101,8 +101,10 @@ export default function SignupPage() {
       const data = await res.json();
       if (data.id) {
         sessionStorage.setItem("1ntent_share_id", data.id);
+        return data.id;
       }
     } catch {}
+    return null;
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -114,13 +116,6 @@ export default function SignupPage() {
 
     const referralCode = generateCode();
     const referredBy = sessionStorage.getItem("1ntent_ref") || null;
-
-    // Generate radar chart image client-side
-    let radarImageBase64: string | null = null;
-    if (testData.radarScores) {
-      const dataUrl = generateRadarImage(testData.radarScores);
-      if (dataUrl) radarImageBase64 = getBase64FromDataUrl(dataUrl);
-    }
 
     try {
       const { data: user, error: userError } = await supabase
@@ -139,7 +134,12 @@ export default function SignupPage() {
         } else {
           console.warn("Supabase error, proceeding without saving:", userError);
           trackEvent("EmailSubmitted");
-          await saveShareResult(testData.profile, testData.radarScores);
+          const sid1 = await saveShareResult(testData.profile, testData.radarScores);
+          fetch("/api/send-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, profile: testData.profile, shareId: sid1 }),
+          }).catch(() => {});
           sessionStorage.removeItem("testData");
           sessionStorage.removeItem("1ntent_ref");
           sessionStorage.setItem("1ntent_referral_code", referralCode);
@@ -161,12 +161,12 @@ export default function SignupPage() {
         });
 
       trackEvent("EmailSubmitted");
+      const sid2 = await saveShareResult(testData.profile, testData.radarScores);
       fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, profile: testData.profile, radarImage: radarImageBase64 }),
+        body: JSON.stringify({ email, profile: testData.profile, shareId: sid2 }),
       }).catch(() => {});
-      await saveShareResult(testData.profile, testData.radarScores);
 
       sessionStorage.removeItem("testData");
       sessionStorage.removeItem("1ntent_ref");
@@ -177,12 +177,12 @@ export default function SignupPage() {
     } catch {
       console.warn("Supabase not available, proceeding without saving");
       trackEvent("EmailSubmitted");
+      const sid3 = await saveShareResult(testData.profile, testData.radarScores);
       fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, profile: testData.profile, radarImage: radarImageBase64 }),
+        body: JSON.stringify({ email, profile: testData.profile, shareId: sid3 }),
       }).catch(() => {});
-      await saveShareResult(testData.profile, testData.radarScores);
       sessionStorage.removeItem("testData");
       sessionStorage.removeItem("1ntent_ref");
       sessionStorage.setItem("1ntent_referral_code", referralCode);
