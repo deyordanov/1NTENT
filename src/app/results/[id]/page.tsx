@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { createClient } from "@supabase/supabase-js";
 import { ProfileResult } from "@/types";
 import { RadarScores, computeCompatibility } from "@/lib/scoring";
@@ -16,96 +16,6 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-// Floating petals — rose petals drifting down the page
-const petalColors = [
-  "hsl(346, 77%, 50%)",
-  "hsl(346, 60%, 65%)",
-  "hsl(346, 80%, 75%)",
-  "hsl(346, 50%, 82%)",
-  "hsl(340, 70%, 60%)",
-  "hsl(350, 90%, 85%)",
-];
-
-function FloatingPetal({ delay, index }: { delay: number; index: number }) {
-  const left = 5 + Math.random() * 90;
-  const size = 8 + Math.random() * 14;
-  const color = petalColors[index % petalColors.length];
-  const drift = (Math.random() - 0.5) * 120;
-  const rotation = Math.random() * 360;
-  const duration = 8 + Math.random() * 7;
-
-  return (
-    <motion.div
-      className="pointer-events-none fixed"
-      style={{
-        left: `${left}%`,
-        top: -20,
-        zIndex: 0,
-      }}
-      animate={{
-        opacity: [0, 0.7, 0.7, 0.5, 0],
-        y: [-20, 900],
-        x: [0, drift * 0.3, drift, drift * 0.5],
-        rotate: [0, rotation * 0.5, rotation + 180],
-      }}
-      transition={{
-        duration,
-        delay,
-        ease: "linear",
-        repeat: Infinity,
-        repeatDelay: Math.random() * 2,
-      }}
-    >
-      <svg width={size} height={size * 1.4} viewBox="0 0 20 28">
-        <path
-          d="M10 0 C14 6, 20 12, 18 20 C16 26, 12 28, 10 28 C8 28, 4 26, 2 20 C0 12, 6 6, 10 0Z"
-          fill={color}
-          opacity={0.6}
-        />
-      </svg>
-    </motion.div>
-  );
-}
-
-// Sparkle that appears and fades
-function Sparkle({ delay }: { delay: number }) {
-  const left = 10 + Math.random() * 80;
-  const top = 10 + Math.random() * 80;
-  const size = 3 + Math.random() * 5;
-
-  return (
-    <motion.div
-      className="pointer-events-none fixed"
-      style={{
-        left: `${left}%`,
-        top: `${top}%`,
-        zIndex: 0,
-      }}
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{
-        opacity: [0, 1, 0],
-        scale: [0, 1.2, 0],
-      }}
-      transition={{
-        duration: 2,
-        delay,
-        repeat: Infinity,
-        repeatDelay: 3 + Math.random() * 4,
-      }}
-    >
-      <svg width={size * 4} height={size * 4} viewBox="0 0 24 24">
-        <path
-          d="M12 0L13.5 9.5L24 12L13.5 14.5L12 24L10.5 14.5L0 12L10.5 9.5Z"
-          fill="hsl(346, 77%, 50%)"
-          opacity={0.3}
-        />
-      </svg>
-    </motion.div>
-  );
-}
-
-// Floating rose emoji
-
 export default function SharedResultPage() {
   const params = useParams();
   const id = params.id as string;
@@ -114,8 +24,6 @@ export default function SharedResultPage() {
   const [radarScores, setRadarScores] = useState<RadarScores | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
-  const [petals, setPetals] = useState<number[]>([]);
-  const [sparkles, setSparkles] = useState<number[]>([]);
   const [compatibility, setCompatibility] = useState<number | null>(null);
   const [rarityPercent, setRarityPercent] = useState<number | null>(null);
 
@@ -166,13 +74,6 @@ export default function SharedResultPage() {
     } catch {}
   }, [radarScores]);
 
-  // Spawn decorative elements after data loads
-  useEffect(() => {
-    if (loading || notFound) return;
-
-    setPetals(Array.from({ length: 30 }, (_, i) => i));
-    setSparkles(Array.from({ length: 10 }, (_, i) => i));
-  }, [loading, notFound]);
 
   if (loading) {
     return (
@@ -211,18 +112,6 @@ export default function SharedResultPage() {
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-12">
       {/* Background gradient */}
       <div className="pointer-events-none fixed inset-0 bg-gradient-to-b from-primary/[0.03] via-transparent to-primary/[0.02]" />
-
-      {/* Floating petals */}
-      <AnimatePresence>
-        {petals.map((i) => (
-          <FloatingPetal key={`p-${i}`} delay={i * 0.3} index={i} />
-        ))}
-      </AnimatePresence>
-
-      {/* Sparkles */}
-      {sparkles.map((i) => (
-        <Sparkle key={`s-${i}`} delay={i * 0.6} />
-      ))}
 
       <motion.div
         className="relative z-10 w-full max-w-lg"

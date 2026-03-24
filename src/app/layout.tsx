@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { FloatingBlobs } from "@/components/landing/floating-blobs";
+import { FloatingPetals } from "@/components/floating-petals";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -54,6 +55,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen antialiased font-sans">
         <FloatingBlobs />
+        <FloatingPetals petalCount={15} sparkleCount={6} />
         {children}
       </body>
     </html>

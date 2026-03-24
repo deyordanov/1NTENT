@@ -193,9 +193,8 @@ export function RadarChart({ scores, blurred = false }: RadarChartProps) {
 
         {/* HTML labels positioned around chart */}
         {dimensions.map((dim, i) => {
-          const { left, top, angle } = labelPositions[i];
+          const { left, top } = labelPositions[i];
           const score = scores[dim];
-          const normalizedAngle = ((angle % 360) + 360) % 360;
 
           // Center all labels on their axis point
           const translateX = "-50%";
