@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       from: "1NTENT <onboarding@resend.dev>",
       to: email,
       subject: profile
-        ? `Ти си "${profile.title}" — ето какво означава това`
+        ? `Ти си "${profile.title}": ето какво означава това`
         : "Благодарим за теста!",
       html: `
         <div style="font-family: 'Georgia', serif; max-width: 480px; margin: 0 auto; padding: 40px 24px;">

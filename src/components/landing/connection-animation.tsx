@@ -67,7 +67,7 @@ export function ConnectionAnimation() {
 
             {/* Heart — centered with background to cut the line */}
             <motion.div
-              className="relative z-10 flex items-center justify-center rounded-full bg-background px-2"
+              className="relative z-10 flex items-center justify-center"
               initial={{ scale: 0, opacity: 0 }}
               animate={isInView ? { scale: 1, opacity: 1 } : {}}
               transition={{ type: "spring", stiffness: 300, damping: 15, delay: 0.9 }}

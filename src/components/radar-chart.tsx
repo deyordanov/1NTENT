@@ -43,7 +43,7 @@ export function RadarChart({ scores, blurred = false }: RadarChartProps) {
   // Label positions as percentages for HTML overlay
   const labelPositions = dimensions.map((_, i) => {
     const angle = (360 / dimensions.length) * i;
-    const pos = polarToCart(angle, maxR - 2);
+    const pos = polarToCart(angle, maxR + 2);
     // Convert to percentage of the 300x300 viewBox
     return {
       left: `${(pos.x / 300) * 100}%`,
@@ -197,21 +197,10 @@ export function RadarChart({ scores, blurred = false }: RadarChartProps) {
           const score = scores[dim];
           const normalizedAngle = ((angle % 360) + 360) % 360;
 
-          // Alignment based on position
-          let translateX = "-50%";
-          let textAlign: "left" | "center" | "right" = "center";
-          if (normalizedAngle > 30 && normalizedAngle < 150) {
-            translateX = "0%";
-            textAlign = "left";
-          } else if (normalizedAngle > 210 && normalizedAngle < 330) {
-            translateX = "-100%";
-            textAlign = "right";
-          }
-
-          // Top label needs more upward offset
-          let translateY = "-50%";
-          if (normalizedAngle < 30 || normalizedAngle > 330) translateY = "-100%";
-          if (normalizedAngle > 150 && normalizedAngle < 210) translateY = "0%";
+          // Center all labels on their axis point
+          const translateX = "-50%";
+          const textAlign: "left" | "center" | "right" = "center";
+          const translateY = "-50%";
 
           return (
             <motion.div

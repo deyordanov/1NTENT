@@ -7,7 +7,7 @@ export const questions: Question[] = [
     type: "choice",
     options: [
       { label: "Тихо кафе и разговор вкъщи", value: "calm" },
-      { label: "Активно навън — поход, спорт, природа", value: "active" },
+      { label: "Активно навън: поход, спорт, природа", value: "active" },
       { label: "Бранч с близки приятели", value: "social" },
       { label: "Догонване на работа или лични проекти", value: "driven" },
     ],
