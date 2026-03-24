@@ -216,12 +216,16 @@ export function computeCompatibility(a: RadarScores, b: RadarScores): number {
     return Math.max(0, 100 - deviation * 2);
   }
 
-  // 1. Readiness — alignment + both-high bonus
+  // 1. Readiness — not just alignment, both must actually be ready
+  // Multiply alignment by a "readiness quality" factor
   const readinessAlign = alignmentScore(a.readiness, b.readiness);
   const avgReadiness = (a.readiness + b.readiness) / 2;
-  // Bonus when both are high (>60), penalty when either is very low (<30)
-  const readinessBonus = avgReadiness > 60 ? 15 : avgReadiness < 30 ? -20 : 0;
-  const readiness = Math.min(100, Math.max(0, readinessAlign + readinessBonus));
+  const minReadiness = Math.min(a.readiness, b.readiness);
+  // Quality factor: 1.0 when avg >= 70, drops to 0.3 when avg <= 20
+  const qualityFactor = Math.min(1, Math.max(0.3, (avgReadiness - 20) / 50));
+  // Extra penalty if one person is very low (dealbreaker)
+  const mismatchPenalty = minReadiness < 30 ? 0.6 : 1;
+  const readiness = readinessAlign * qualityFactor * mismatchPenalty;
 
   // 2. Intentionality — pure alignment
   const intentionality = alignmentScore(a.intentionality, b.intentionality);
@@ -236,12 +240,13 @@ export function computeCompatibility(a: RadarScores, b: RadarScores): number {
   const openness = complementaryScore(a.openness, b.openness);
 
   // Weighted average
+  // Readiness is heaviest — it's the #1 predictor of success
   const weighted =
-    readiness * 0.25 +
+    readiness * 0.30 +
     intentionality * 0.25 +
     stability * 0.20 +
-    emotionalDepth * 0.15 +
-    openness * 0.15;
+    emotionalDepth * 0.13 +
+    openness * 0.12;
 
   // Scale to 58-96 range
   return Math.round(58 + (weighted / 100) * 38);
