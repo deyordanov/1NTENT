@@ -1,7 +1,5 @@
 import type { AdminUser } from "@/app/admin/page";
-import { RadarChart } from "@/components/radar-chart";
-import { dimensionLabels } from "@/lib/scoring";
-import type { Scores } from "@/types";
+import type { ProfileResult } from "@/types";
 
 interface UserDetailProps {
   user: AdminUser;
@@ -18,36 +16,36 @@ export function UserDetail({ user }: UserDetailProps) {
     );
   }
 
-  const scores = result.scores as Scores;
+  const profile = result.scores as unknown as ProfileResult | undefined;
+  const answers = result.answers as Record<string, string | number>;
 
   return (
     <div className="grid gap-6 px-4 py-6 sm:grid-cols-2">
-      {/* Radar chart */}
-      <div className="flex items-center justify-center">
-        <div className="w-64">
-          <RadarChart scores={scores} />
-        </div>
+      {/* Profile result */}
+      <div className="flex flex-col items-center justify-center text-center">
+        {profile ? (
+          <>
+            <span className="text-4xl">{profile.emoji}</span>
+            <h3 className="mt-2 text-lg font-semibold text-gray-800">
+              {profile.title}
+            </h3>
+            <p className="text-xs text-gray-400">{profile.subtitle}</p>
+            <p className="mt-3 text-sm leading-relaxed text-gray-500">
+              {profile.description}
+            </p>
+          </>
+        ) : (
+          <p className="text-sm text-gray-400">Стар формат (без профил)</p>
+        )}
       </div>
 
-      {/* Scores breakdown */}
+      {/* Answers + meta */}
       <div className="space-y-3">
-        <h4 className="text-sm font-semibold text-gray-700">Резултати</h4>
-        {Object.entries(scores).map(([key, value]) => (
-          <div key={key} className="flex items-center gap-3">
-            <span className="w-28 text-xs text-gray-500">
-              {dimensionLabels[key as keyof typeof dimensionLabels] || key}
-            </span>
-            <div className="flex-1">
-              <div className="h-2 overflow-hidden rounded-full bg-gray-100">
-                <div
-                  className="h-full rounded-full bg-primary"
-                  style={{ width: `${value}%` }}
-                />
-              </div>
-            </div>
-            <span className="w-8 text-right text-xs font-medium text-gray-600">
-              {value}
-            </span>
+        <h4 className="text-sm font-semibold text-gray-700">Отговори</h4>
+        {Object.entries(answers).map(([key, value]) => (
+          <div key={key} className="flex items-center gap-2">
+            <span className="w-10 text-xs font-mono text-gray-400">{key}</span>
+            <span className="text-sm text-gray-600">{String(value)}</span>
           </div>
         ))}
 

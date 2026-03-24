@@ -5,11 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
-import { Answers, Scores } from "@/types";
+import { Answers, ProfileResult } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/logo";
-import { RadarChart } from "@/components/radar-chart";
 import { trackEvent } from "@/lib/analytics";
 
 export default function SignupPage() {
@@ -19,12 +18,10 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [testData, setTestData] = useState<{
     answers: Answers;
-    scores: Scores;
+    profile: ProfileResult;
   } | null>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const [timeLeft, setTimeLeft] = useState("");
-  const [summary, setSummary] = useState("");
-  const [summaryLoading, setSummaryLoading] = useState(false);
 
   // Countdown - results expire in ~15 minutes from page load
   const expireTime = useMemo(() => Date.now() + 15 * 60 * 1000, []);
@@ -51,22 +48,7 @@ export default function SignupPage() {
       router.push("/test");
       return;
     }
-    const parsed = JSON.parse(stored);
-    setTestData(parsed);
-
-    // Fetch AI personality summary
-    setSummaryLoading(true);
-    fetch("/api/personality-summary", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ scores: parsed.scores }),
-    })
-      .then((res) => res.ok ? res.json() : null)
-      .then((data) => {
-        if (data?.summary) setSummary(data.summary);
-      })
-      .catch(() => {})
-      .finally(() => setSummaryLoading(false));
+    setTestData(JSON.parse(stored));
   }, [router]);
 
   const generateCode = useCallback(() => {
@@ -118,17 +100,16 @@ export default function SignupPage() {
         .insert({
           user_id: user.id,
           answers: testData.answers,
-          scores: testData.scores,
+          scores: testData.profile,
         });
 
       trackEvent("EmailSubmitted");
       fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, scores: testData.scores }),
+        body: JSON.stringify({ email, profile: testData.profile }),
       }).catch(() => {});
 
-      // Pass the real referral code to the confirmation page
       sessionStorage.removeItem("testData");
       sessionStorage.removeItem("1ntent_ref");
       sessionStorage.setItem("1ntent_referral_code", user.referral_code);
@@ -139,7 +120,7 @@ export default function SignupPage() {
       fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, scores: testData.scores }),
+        body: JSON.stringify({ email, profile: testData.profile }),
       }).catch(() => {});
       sessionStorage.removeItem("testData");
       sessionStorage.removeItem("1ntent_ref");
@@ -149,6 +130,8 @@ export default function SignupPage() {
   }
 
   if (!testData) return null;
+
+  const { profile } = testData;
 
   function scrollToEmail() {
     emailRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -174,60 +157,70 @@ export default function SignupPage() {
         </div>
 
         <div className="rounded-2xl border border-border/60 bg-card p-8 shadow-sm">
-          {/* Title */}
+          {/* Profile result — blurred until email */}
           <div className="text-center">
-            <h1 className="font-serif text-2xl font-semibold">
-              Твоят начален анализ
-            </h1>
+            <motion.div
+              className="mb-2 text-5xl"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 200, damping: 12, delay: 0.2 }}
+            >
+              {profile.emoji}
+            </motion.div>
+
+            <motion.h1
+              className="font-serif text-2xl font-semibold"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              {profile.title}
+            </motion.h1>
+
+            <motion.p
+              className="mt-1 text-sm text-muted-foreground"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              {profile.subtitle}
+            </motion.p>
           </div>
 
-          {/* Blurred radar chart with overlay */}
-          <div className="relative mt-6 mb-2">
-            <RadarChart scores={testData.scores} blurred />
+          {/* Blurred description — teaser */}
+          <motion.div
+            className="relative mt-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7 }}
+          >
+            <div className="select-none" style={{ filter: "blur(4px)" }}>
+              <p className="text-center text-[15px] leading-relaxed text-muted-foreground">
+                {profile.description}
+              </p>
+            </div>
 
             <motion.button
               className="absolute inset-0 flex cursor-pointer items-center justify-center"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 1.5, duration: 0.5 }}
+              transition={{ delay: 1.2, duration: 0.5 }}
               onClick={scrollToEmail}
             >
               <div className="rounded-xl bg-card/90 px-5 py-3 text-center shadow-lg backdrop-blur-sm transition-transform hover:scale-105">
                 <p className="text-sm font-medium text-foreground">
-                  Виж пълния си анализ
+                  Виж пълния си профил
                 </p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   Въведи имейла си по-долу
                 </p>
               </div>
             </motion.button>
-          </div>
+          </motion.div>
 
-          {/* AI personality insight */}
-          {(summary || summaryLoading) && (
-            <motion.div
-              className="mt-4 rounded-xl bg-primary/[0.03] px-5 py-4"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.5 }}
-            >
-              {summaryLoading ? (
-                <div className="flex items-center justify-center gap-2 py-2">
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary/40" />
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary/40" style={{ animationDelay: "0.2s" }} />
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary/40" style={{ animationDelay: "0.4s" }} />
-                </div>
-              ) : (
-                <p className="text-center text-[14px] italic leading-relaxed text-muted-foreground">
-                  &ldquo;{summary}&rdquo;
-                </p>
-              )}
-            </motion.div>
-          )}
-
-          {/* Single-field form — minimal friction */}
+          {/* Single-field form */}
           <motion.div
-            className="mt-6 border-t border-border/40 pt-5"
+            className="mt-8 border-t border-border/40 pt-5"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.5 }}

@@ -1,77 +1,37 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { ProfileResult } from "@/types";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const dimensionLabels: Record<string, string> = {
-  openness: "Откритост",
-  conscientiousness: "Отговорност",
-  extraversion: "Общителност",
-  agreeableness: "Съгласие",
-  neuroticism: "Чувствителност",
-};
-
-function buildChartUrl(scores: Record<string, number>): string {
-  const labels = Object.keys(scores).map((k) => dimensionLabels[k] || k);
-  const values = Object.values(scores);
-
-  const config = {
-    type: "radar",
-    data: {
-      labels,
-      datasets: [
-        {
-          label: "Твоят профил",
-          data: values,
-          backgroundColor: "rgba(200, 39, 77, 0.15)",
-          borderColor: "rgba(200, 39, 77, 0.8)",
-          borderWidth: 2,
-          pointBackgroundColor: "rgba(200, 39, 77, 1)",
-          pointRadius: 4,
-        },
-      ],
-    },
-    options: {
-      scale: {
-        ticks: { beginAtZero: true, max: 100, stepSize: 25, display: false },
-        pointLabels: { fontSize: 13, fontColor: "#555" },
-        gridLines: { color: "rgba(0,0,0,0.06)" },
-      },
-      legend: { display: false },
-      plugins: { datalabels: { display: false } },
-    },
-  };
-
-  const encoded = encodeURIComponent(JSON.stringify(config));
-  return `https://quickchart.io/chart?c=${encoded}&w=400&h=400&bkg=white`;
-}
-
-function buildScoresSummary(scores: Record<string, number>): string {
-  return Object.entries(scores)
-    .map(([key, value]) => {
-      const label = dimensionLabels[key] || key;
-      const bar = "█".repeat(Math.round(value / 10));
-      const empty = "░".repeat(10 - Math.round(value / 10));
-      return `${label}: ${bar}${empty} ${value}%`;
-    })
-    .join("<br/>");
-}
-
 export async function POST(request: Request) {
   try {
-    const { email, scores } = await request.json();
+    const { email, profile } = (await request.json()) as {
+      email: string;
+      profile?: ProfileResult;
+    };
 
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    const chartUrl = scores ? buildChartUrl(scores) : "";
-    const scoresSummary = scores ? buildScoresSummary(scores) : "";
+    const profileSection = profile
+      ? `
+          <div style="background: linear-gradient(135deg, #fdf2f4 0%, #fff 100%); border-radius: 16px; padding: 24px; margin: 24px 0; text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 12px;">${profile.emoji}</div>
+            <h2 style="font-size: 22px; color: #1a1a1a; margin: 0 0 4px;">${profile.title}</h2>
+            <p style="font-size: 13px; color: #999; margin: 0 0 16px; font-style: italic;">${profile.subtitle}</p>
+            <p style="font-size: 15px; line-height: 1.6; color: #555; margin: 0;">${profile.description}</p>
+          </div>
+        `
+      : "";
 
     await resend.emails.send({
       from: "1NTENT <onboarding@resend.dev>",
       to: email,
-      subject: "Твоят личностен профил е готов!",
+      subject: profile
+        ? `Ти си "${profile.title}" — ето какво означава това`
+        : "Благодарим за теста!",
       html: `
         <div style="font-family: 'Georgia', serif; max-width: 480px; margin: 0 auto; padding: 40px 24px;">
           <h1 style="font-size: 24px; color: #1a1a1a; margin-bottom: 8px;">
@@ -85,28 +45,10 @@ export async function POST(request: Request) {
           </p>
 
           <p style="font-size: 16px; line-height: 1.6; color: #333;">
-            Благодарим ти, че попълни теста. Ето твоя начален личностен профил:
+            Благодарим ти, че попълни теста. Ето твоя резултат:
           </p>
 
-          ${
-            chartUrl
-              ? `
-          <div style="text-align: center; margin: 24px 0;">
-            <img src="${chartUrl}" alt="Личностен профил" width="360" style="max-width: 100%; border-radius: 12px;" />
-          </div>
-          `
-              : ""
-          }
-
-          ${
-            scoresSummary
-              ? `
-          <div style="background: #fafafa; border-radius: 8px; padding: 16px 20px; margin: 20px 0; font-family: monospace; font-size: 13px; line-height: 1.8; color: #555;">
-            ${scoresSummary}
-          </div>
-          `
-              : ""
-          }
+          ${profileSection}
 
           <p style="font-size: 16px; line-height: 1.6; color: #333;">
             Член от нашия екип ще прегледа профила ти и ще се свърже лично с теб в рамките на няколко дни.

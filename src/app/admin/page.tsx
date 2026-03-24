@@ -6,8 +6,8 @@ import { UsersTable } from "@/components/admin/users-table";
 import { Logo } from "@/components/logo";
 
 interface TestResult {
-  scores: Record<string, number>;
-  answers: Record<string, number>;
+  scores: Record<string, string> | null;
+  answers: Record<string, string | number>;
   completed_at: string;
 }
 

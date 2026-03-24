@@ -34,7 +34,7 @@ const AB_VARIANTS = [
         </span>
       </>
     ),
-    subtitle: "10 въпроса за теб. Ние се грижим за останалото. Без приложения, без безкрайни профили.",
+    subtitle: "6 въпроса за теб. Ние се грижим за останалото. Без приложения, без безкрайни профили.",
     cta: "Започни безплатно",
   },
   {
@@ -154,7 +154,7 @@ export function Hero() {
             </motion.div>
           </Link>
           <span className="text-sm text-muted-foreground">
-            Безплатно &middot; 10 въпроса &middot; под 3 мин
+            Безплатно &middot; 6 въпроса &middot; под 2 мин
           </span>
         </motion.div>
 

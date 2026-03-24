@@ -5,18 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import { questions } from "@/lib/questions";
-import { computeScores } from "@/lib/scoring";
+import { computeProfile } from "@/lib/scoring";
 import { Answers } from "@/types";
 import { Logo } from "@/components/logo";
 import { trackEvent } from "@/lib/analytics";
-
-const scaleLabels = [
-  "Изобщо не",
-  "По-скоро не",
-  "Неутрално",
-  "По-скоро да",
-  "Напълно!",
-];
 
 const dotColors = [
   "hsl(346, 77%, 50%)",
@@ -44,12 +36,7 @@ function ConfettiDot({ x, y }: { x: number; y: number }) {
         zIndex: 100,
       }}
       initial={{ opacity: 1, x: 0, y: 0, scale: 1.2 }}
-      animate={{
-        opacity: 0,
-        x: randomX,
-        y: randomY,
-        scale: 0.2,
-      }}
+      animate={{ opacity: 0, x: randomX, y: randomY, scale: 0.2 }}
       transition={{ duration: 0.9, ease: "easeOut" }}
     />
   );
@@ -73,7 +60,7 @@ export default function TestPage() {
   const [answers, setAnswers] = useState<Answers>({});
   const [direction, setDirection] = useState(1);
   const [particles, setParticles] = useState<{ id: number; x: number; y: number }[]>([]);
-  const [selectedFlash, setSelectedFlash] = useState<number | null>(null);
+  const [selectedFlash, setSelectedFlash] = useState<string | number | null>(null);
   const [streak, setStreak] = useState(0);
   const [transitioning, setTransitioning] = useState(false);
   const [showResume, setShowResume] = useState(false);
@@ -81,12 +68,10 @@ export default function TestPage() {
   const currentIndexRef = useRef(currentIndex);
   const completedRef = useRef(false);
 
-  // Keep ref in sync
   useEffect(() => {
     currentIndexRef.current = currentIndex;
   }, [currentIndex]);
 
-  // Track test abandonment on page leave
   useEffect(() => {
     function handleBeforeUnload() {
       if (!completedRef.current && currentIndexRef.current > 0) {
@@ -101,7 +86,6 @@ export default function TestPage() {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, []);
 
-  // Restore saved progress
   useEffect(() => {
     try {
       const saved = localStorage.getItem("1ntent_test_progress");
@@ -168,7 +152,7 @@ export default function TestPage() {
     }, 1000);
   }, []);
 
-  function handleSelect(value: number, e: React.MouseEvent) {
+  function handleSelectAnswer(value: string | number, e: React.MouseEvent) {
     if (transitioning) return;
     setTransitioning(true);
 
@@ -177,28 +161,26 @@ export default function TestPage() {
     setSelectedFlash(value);
     setStreak((s) => s + 1);
 
-    // Track first answer and completion
     if (Object.keys(answers).length === 0) trackEvent("TestStarted");
     if (isLast) {
       trackEvent("TestCompleted");
       completedRef.current = true;
     }
 
-    const particleCount = Math.min(3 + streak, 8) + (value >= 4 ? 2 : 0);
+    const particleCount = Math.min(3 + streak, 8);
     spawnParticles(e, particleCount);
 
     setTimeout(() => setSelectedFlash(null), 300);
 
     if (isLast) {
-      const scores = computeScores(updated);
+      const profile = computeProfile(updated);
       sessionStorage.setItem(
         "testData",
-        JSON.stringify({ answers: updated, scores })
+        JSON.stringify({ answers: updated, profile })
       );
       localStorage.removeItem("1ntent_test_progress");
       setTimeout(() => router.push("/signup"), 600);
     } else {
-      // Save progress
       const nextIndex = currentIndex + 1;
       localStorage.setItem(
         "1ntent_test_progress",
@@ -224,21 +206,11 @@ export default function TestPage() {
     }
   }
 
-  function getEncouragement(): string | null {
-    const answered = Object.keys(answers).length;
-    if (currentIndex === 0) return "Чудесно начало!";
-    if (currentIndex === 9) return "Последен въпрос!";
-    if (currentIndex === 8) return "Почти готово!";
-
-    // Personality-based hints after enough data
-    if (answered >= 3) {
-      const avg = Object.values(answers).reduce((a, b) => a + b, 0) / answered;
-      if (currentIndex === 4) return "Вече си на половината!";
-      if (currentIndex === 5 && avg > 3.5) return "Изглеждаш доста решителен/а!";
-      if (currentIndex === 5 && avg <= 3.5) return "Интересен профил се оформя...";
-      if (currentIndex === 7) return "Още малко!";
-    }
-
+  function getEncouragement(): string {
+    if (currentIndex === 0) return "Да започваме!";
+    if (isLast) return "Последен въпрос!";
+    if (currentIndex === questions.length - 2) return "Почти готово!";
+    if (currentIndex === Math.floor(questions.length / 2)) return "На половината си!";
     return `Въпрос ${currentIndex + 1} от ${questions.length}`;
   }
 
@@ -278,14 +250,12 @@ export default function TestPage() {
 
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-12">
-      {/* Floating particles */}
       <AnimatePresence>
         {particles.map((p) => (
           <ConfettiDot key={p.id} x={p.x} y={p.y} />
         ))}
       </AnimatePresence>
 
-      {/* Background glow */}
       <motion.div
         className="pointer-events-none fixed inset-0"
         animate={{
@@ -295,17 +265,12 @@ export default function TestPage() {
       />
 
       <div className="relative w-full max-w-lg">
-        {/* Header */}
         <div className="mb-4 text-center">
-          <Link
-            href="/"
-            className="font-serif text-lg font-semibold tracking-tight text-foreground"
-          >
+          <Link href="/" className="font-serif text-lg font-semibold tracking-tight text-foreground">
             <Logo />
           </Link>
         </div>
 
-        {/* Progress */}
         <div className="mb-8">
           <div className="mb-2 flex items-center justify-between text-sm">
             <AnimatePresence mode="wait">
@@ -325,22 +290,17 @@ export default function TestPage() {
             </span>
           </div>
 
-          {/* Custom progress bar */}
           <div className="h-2 overflow-hidden rounded-full bg-muted/50">
             <motion.div
               className="h-full rounded-full"
               style={{ backgroundColor: progressBg }}
               initial={{ width: "0%" }}
               animate={{ width: `${progress}%` }}
-              transition={{
-                duration: 0.5,
-                ease: [0.22, 1, 0.36, 1],
-              }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             />
           </div>
         </div>
 
-        {/* Question card */}
         <motion.div
           ref={cardRef}
           className="relative overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm"
@@ -360,66 +320,126 @@ export default function TestPage() {
                   {question.text}
                 </h2>
 
-                <div className="space-y-2.5">
-                  {scaleLabels.map((label, i) => {
-                    const value = i + 1;
-                    const isSelected = currentAnswer === value;
-                    const isFlashing = selectedFlash === value;
+                {/* Multiple choice options */}
+                {question.type === "choice" && (
+                  <div className="space-y-2.5">
+                    {question.options.map((option, i) => {
+                      const isSelected = currentAnswer === option.value;
+                      const isFlashing = selectedFlash === option.value;
 
-                    return (
-                      <motion.button
-                        key={i}
-                        onClick={(e) => handleSelect(value, e)}
-                        className={`relative flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 text-left text-base transition-all ${
-                          isSelected
-                            ? "border-primary bg-primary/10 text-foreground shadow-md shadow-primary/10"
-                            : "border-border/40 hover:border-primary/40 hover:bg-primary/[0.03] hover:shadow-sm"
-                        }`}
-                        transition={{ duration: 0.15 }}
-                        whileHover={{ scale: 1.02, x: 4 }}
-                        whileTap={{ scale: 0.97 }}
-                      >
-                        <PulseRing isActive={isFlashing} />
-
-                        <span
-                          className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border-2 text-xs font-bold transition-colors ${
+                      return (
+                        <motion.button
+                          key={option.value}
+                          onClick={(e) => handleSelectAnswer(option.value, e)}
+                          className={`relative flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 text-left text-base transition-all ${
                             isSelected
-                              ? "border-primary bg-primary text-white"
-                              : "border-muted-foreground/25 text-muted-foreground/50"
+                              ? "border-primary bg-primary/10 text-foreground shadow-md shadow-primary/10"
+                              : "border-border/40 hover:border-primary/40 hover:bg-primary/[0.03] hover:shadow-sm"
                           }`}
+                          transition={{ duration: 0.15 }}
+                          whileHover={{ scale: 1.02, x: 4 }}
+                          whileTap={{ scale: 0.97 }}
                         >
-                          {value}
-                        </span>
+                          <PulseRing isActive={isFlashing} />
 
-                        <span className="flex-1 font-medium">{label}</span>
+                          <span
+                            className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border-2 text-xs font-bold transition-colors ${
+                              isSelected
+                                ? "border-primary bg-primary text-white"
+                                : "border-muted-foreground/25 text-muted-foreground/50"
+                            }`}
+                          >
+                            {String.fromCharCode(65 + i)}
+                          </span>
 
-                        <AnimatePresence>
-                          {isSelected && (
-                            <motion.span
-                              initial={{ scale: 0, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              exit={{ scale: 0, opacity: 0 }}
-                              transition={{
-                                type: "spring",
-                                stiffness: 500,
-                                damping: 15,
-                              }}
-                              className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white"
-                            >
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M20 6L9 17l-5-5" />
-                              </svg>
-                            </motion.span>
-                          )}
-                        </AnimatePresence>
-                      </motion.button>
-                    );
-                  })}
-                </div>
+                          <span className="flex-1 font-medium">{option.label}</span>
+
+                          <AnimatePresence>
+                            {isSelected && (
+                              <motion.span
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0, opacity: 0 }}
+                                transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                                className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white"
+                              >
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M20 6L9 17l-5-5" />
+                                </svg>
+                              </motion.span>
+                            )}
+                          </AnimatePresence>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Scale question */}
+                {question.type === "scale" && (
+                  <div className="space-y-2.5">
+                    {Array.from({ length: question.max - question.min + 1 }, (_, i) => {
+                      const value = question.min + i;
+                      const isSelected = currentAnswer === value;
+                      const isFlashing = selectedFlash === value;
+
+                      const scaleText =
+                        value === question.min
+                          ? question.minLabel || String(value)
+                          : value === question.max
+                          ? question.maxLabel || String(value)
+                          : String(value);
+
+                      return (
+                        <motion.button
+                          key={value}
+                          onClick={(e) => handleSelectAnswer(value, e)}
+                          className={`relative flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 text-left text-base transition-all ${
+                            isSelected
+                              ? "border-primary bg-primary/10 text-foreground shadow-md shadow-primary/10"
+                              : "border-border/40 hover:border-primary/40 hover:bg-primary/[0.03] hover:shadow-sm"
+                          }`}
+                          transition={{ duration: 0.15 }}
+                          whileHover={{ scale: 1.02, x: 4 }}
+                          whileTap={{ scale: 0.97 }}
+                        >
+                          <PulseRing isActive={isFlashing} />
+
+                          <span
+                            className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border-2 text-xs font-bold transition-colors ${
+                              isSelected
+                                ? "border-primary bg-primary text-white"
+                                : "border-muted-foreground/25 text-muted-foreground/50"
+                            }`}
+                          >
+                            {value}
+                          </span>
+
+                          <span className="flex-1 font-medium">{scaleText}</span>
+
+                          <AnimatePresence>
+                            {isSelected && (
+                              <motion.span
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0, opacity: 0 }}
+                                transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                                className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white"
+                              >
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M20 6L9 17l-5-5" />
+                                </svg>
+                              </motion.span>
+                            )}
+                          </AnimatePresence>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                )}
               </motion.div>
             </AnimatePresence>
 
-            {/* Back button */}
             {currentIndex > 0 && (
               <motion.div
                 className="mt-6 flex justify-start"
@@ -438,7 +458,6 @@ export default function TestPage() {
           </div>
         </motion.div>
 
-        {/* Hint */}
         <motion.p
           className="mt-4 text-center text-xs text-muted-foreground/50"
           initial={{ opacity: 0 }}
