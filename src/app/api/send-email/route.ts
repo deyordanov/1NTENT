@@ -71,13 +71,13 @@ export async function POST(request: Request) {
           </div>
 
           <p style="font-size: 14px; line-height: 1.6; color: #888;">
-            Междувременно, сподели 1NTENT с приятели, които може да се заинтересуват.
+            Междувременно, сподели <span style="font-weight:700;"><span style="color:#c8274d;">1</span>NTENT</span> с приятели, които може да се заинтересуват.
           </p>
 
           <hr style="border: none; border-top: 1px solid #eee; margin: 32px 0 16px;" />
 
           <p style="font-size: 12px; color: #aaa; text-align: center;">
-            &copy; 2026 1NTENT
+            &copy; 2026 <span style="color:#c8274d;">1</span>NTENT
           </p>
         </div>
       `,
