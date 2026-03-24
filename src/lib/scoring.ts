@@ -180,29 +180,71 @@ export const profileRarity: Record<ProfileType, number> = {
   emerging: 14,
 };
 
-// Compute compatibility % between two radar score sets
+/**
+ * Compatibility Algorithm
+ *
+ * Based on relationship psychology research:
+ * - Couples need ALIGNMENT on values, goals, and readiness (similar = better)
+ * - Couples benefit from COMPLEMENTARITY on personality traits (moderate difference = ideal)
+ * - Both partners must be ready — mismatched readiness is a dealbreaker
+ *
+ * 5 dimensions, each scored 0-100:
+ *
+ * 1. Readiness     — ALIGNMENT + BONUS: both high = strong match, one low = penalty
+ * 2. Intentionality — ALIGNMENT: shared sense of purpose matters most
+ * 3. Stability      — ALIGNMENT: mismatched need for security causes friction
+ * 4. Emotional Depth — COMPLEMENTARY: one slightly more emotional balances well
+ * 5. Openness       — COMPLEMENTARY: too similar = boring, too different = clash
+ *
+ * Weights: Readiness (25%), Intentionality (25%), Stability (20%),
+ *          Emotional Depth (15%), Openness (15%)
+ *
+ * Final score is scaled to 58-96 range (nobody wants <55%, nobody believes 100%)
+ */
 export function computeCompatibility(a: RadarScores, b: RadarScores): number {
-  const dims = Object.keys(a) as RadarDimension[];
-  let totalSimilarity = 0;
-
-  for (const dim of dims) {
-    const diff = Math.abs(a[dim] - b[dim]);
-    // Complementary scoring: some dimensions match better when similar,
-    // others when complementary
-    if (dim === "openness" || dim === "emotionalDepth") {
-      // Complementary dimensions — moderate difference is ideal
-      const idealDiff = 20;
-      totalSimilarity += Math.max(0, 100 - Math.abs(diff - idealDiff) * 1.5);
-    } else {
-      // Alignment dimensions — similarity is better
-      totalSimilarity += Math.max(0, 100 - diff * 1.2);
-    }
+  // Helper: alignment score — closer = better
+  function alignmentScore(valA: number, valB: number): number {
+    const diff = Math.abs(valA - valB);
+    return Math.max(0, 100 - diff * 1.3);
   }
 
-  // Average across dimensions, add a base so it never feels too low
-  const raw = totalSimilarity / dims.length;
-  // Scale to 62-96 range (nobody wants to see <60%, nobody believes 100%)
-  return Math.round(62 + (raw / 100) * 34);
+  // Helper: complementary score — moderate difference (~15-25) is ideal
+  function complementaryScore(valA: number, valB: number): number {
+    const diff = Math.abs(valA - valB);
+    const idealDiff = 20;
+    const deviation = Math.abs(diff - idealDiff);
+    return Math.max(0, 100 - deviation * 2);
+  }
+
+  // 1. Readiness — alignment + both-high bonus
+  const readinessAlign = alignmentScore(a.readiness, b.readiness);
+  const avgReadiness = (a.readiness + b.readiness) / 2;
+  // Bonus when both are high (>60), penalty when either is very low (<30)
+  const readinessBonus = avgReadiness > 60 ? 15 : avgReadiness < 30 ? -20 : 0;
+  const readiness = Math.min(100, Math.max(0, readinessAlign + readinessBonus));
+
+  // 2. Intentionality — pure alignment
+  const intentionality = alignmentScore(a.intentionality, b.intentionality);
+
+  // 3. Stability — alignment with slight tolerance
+  const stability = alignmentScore(a.stability, b.stability);
+
+  // 4. Emotional Depth — complementary
+  const emotionalDepth = complementaryScore(a.emotionalDepth, b.emotionalDepth);
+
+  // 5. Openness — complementary
+  const openness = complementaryScore(a.openness, b.openness);
+
+  // Weighted average
+  const weighted =
+    readiness * 0.25 +
+    intentionality * 0.25 +
+    stability * 0.20 +
+    emotionalDepth * 0.15 +
+    openness * 0.15;
+
+  // Scale to 58-96 range
+  return Math.round(58 + (weighted / 100) * 38);
 }
 
 // Export profile data for use in other components

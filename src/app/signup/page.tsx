@@ -6,7 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { Answers, ProfileResult } from "@/types";
-import { RadarScores, profileRarity } from "@/lib/scoring";
+import { RadarScores } from "@/lib/scoring";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/logo";
@@ -25,6 +25,7 @@ export default function SignupPage() {
   } | null>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const [timeLeft, setTimeLeft] = useState("");
+  const [rarityPercent, setRarityPercent] = useState<number | null>(null);
 
   // Countdown - results expire in ~15 minutes from page load
   const expireTime = useMemo(() => Date.now() + 15 * 60 * 1000, []);
@@ -53,6 +54,17 @@ export default function SignupPage() {
     }
     const parsed = JSON.parse(stored);
     setTestData(parsed);
+
+    // Fetch rarity percentage
+    if (parsed.profile?.type) {
+      fetch("/api/profile-stats")
+        .then((r) => r.json())
+        .then((data) => {
+          const pct = data.percentages?.[parsed.profile.type];
+          if (pct) setRarityPercent(pct);
+        })
+        .catch(() => {});
+    }
 
     // Save share result immediately so it's ready for the confirmation page
     if (!sessionStorage.getItem("1ntent_share_id")) {
@@ -137,6 +149,7 @@ export default function SignupPage() {
           user_id: user.id,
           answers: testData.answers,
           scores: testData.profile,
+          profile_type: testData.profile.type,
         });
 
       trackEvent("EmailSubmitted");
@@ -229,17 +242,19 @@ export default function SignupPage() {
             </motion.p>
 
             {/* Rarity badge */}
-            <motion.div
-              className="mx-auto mt-3 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.7, type: "spring", stiffness: 200 }}
-            >
-              <span className="text-xs">✦</span>
-              <span className="text-xs font-medium text-primary">
-                Само {profileRarity[profile.type]}% от хората
-              </span>
-            </motion.div>
+            {rarityPercent && (
+              <motion.div
+                className="mx-auto mt-3 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.7, type: "spring", stiffness: 200 }}
+              >
+                <span className="text-xs">✦</span>
+                <span className="text-xs font-medium text-primary">
+                  Само {rarityPercent}% от хората имат този профил
+                </span>
+              </motion.div>
+            )}
           </div>
 
           {/* Radar chart — blurred */}

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@supabase/supabase-js";
 import { ProfileResult } from "@/types";
-import { RadarScores, profileRarity, computeCompatibility } from "@/lib/scoring";
+import { RadarScores, computeCompatibility } from "@/lib/scoring";
 import { RadarChart } from "@/components/radar-chart";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
@@ -117,6 +117,7 @@ export default function SharedResultPage() {
   const [petals, setPetals] = useState<number[]>([]);
   const [sparkles, setSparkles] = useState<number[]>([]);
   const [compatibility, setCompatibility] = useState<number | null>(null);
+  const [rarityPercent, setRarityPercent] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchResult() {
@@ -137,6 +138,18 @@ export default function SharedResultPage() {
 
     if (id) fetchResult();
   }, [id]);
+
+  // Fetch rarity percentage
+  useEffect(() => {
+    if (!profile) return;
+    fetch("/api/profile-stats")
+      .then((r) => r.json())
+      .then((data) => {
+        const pct = data.percentages?.[profile.type];
+        if (pct) setRarityPercent(pct);
+      })
+      .catch(() => {});
+  }, [profile]);
 
   // Check if visitor has their own test data for compatibility
   useEffect(() => {
@@ -268,17 +281,19 @@ export default function SharedResultPage() {
             </motion.p>
 
             {/* Rarity badge */}
-            <motion.div
-              className="mx-auto mt-3 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.7, type: "spring", stiffness: 200 }}
-            >
-              <span className="text-xs">✦</span>
-              <span className="text-xs font-medium text-primary">
-                Само {profileRarity[profile.type]}% от хората
-              </span>
-            </motion.div>
+            {rarityPercent && (
+              <motion.div
+                className="mx-auto mt-3 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.7, type: "spring", stiffness: 200 }}
+              >
+                <span className="text-xs">✦</span>
+                <span className="text-xs font-medium text-primary">
+                  Само {rarityPercent}% от хората имат този профил
+                </span>
+              </motion.div>
+            )}
           </div>
 
           {/* Radar chart */}
