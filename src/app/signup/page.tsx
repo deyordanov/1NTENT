@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/logo";
 import { RadarChart } from "@/components/radar-chart";
 import { trackEvent } from "@/lib/analytics";
+import { generateRadarImage, getBase64FromDataUrl } from "@/lib/generate-radar-image";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -114,6 +115,13 @@ export default function SignupPage() {
     const referralCode = generateCode();
     const referredBy = sessionStorage.getItem("1ntent_ref") || null;
 
+    // Generate radar chart image client-side
+    let radarImageBase64: string | null = null;
+    if (testData.radarScores) {
+      const dataUrl = generateRadarImage(testData.radarScores);
+      if (dataUrl) radarImageBase64 = getBase64FromDataUrl(dataUrl);
+    }
+
     try {
       const { data: user, error: userError } = await supabase
         .from("users")
@@ -156,7 +164,7 @@ export default function SignupPage() {
       fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, profile: testData.profile, radarScores: testData.radarScores }),
+        body: JSON.stringify({ email, profile: testData.profile, radarImage: radarImageBase64 }),
       }).catch(() => {});
       await saveShareResult(testData.profile, testData.radarScores);
 
@@ -172,7 +180,7 @@ export default function SignupPage() {
       fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, profile: testData.profile, radarScores: testData.radarScores }),
+        body: JSON.stringify({ email, profile: testData.profile, radarImage: radarImageBase64 }),
       }).catch(() => {});
       await saveShareResult(testData.profile, testData.radarScores);
       sessionStorage.removeItem("testData");

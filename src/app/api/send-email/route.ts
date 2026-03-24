@@ -1,80 +1,25 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { ProfileResult } from "@/types";
-import { RadarScores } from "@/lib/scoring";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-function buildRadarChartUrl(scores: RadarScores): string {
-  const labels = ["Готовност", "Емоционалност", "Целенасоченост", "Стабилност", "Откритост"];
-  const data = [
-    scores.readiness,
-    scores.emotionalDepth,
-    scores.intentionality,
-    scores.stability,
-    scores.openness,
-  ];
-
-  const config = {
-    type: "radar",
-    data: {
-      labels,
-      datasets: [
-        {
-          data,
-          backgroundColor: "rgba(200, 39, 77, 0.15)",
-          borderColor: "rgba(200, 39, 77, 0.8)",
-          borderWidth: 2,
-          pointBackgroundColor: "#fff",
-          pointBorderColor: "rgba(200, 39, 77, 0.9)",
-          pointBorderWidth: 2,
-          pointRadius: 5,
-        },
-      ],
-    },
-    options: {
-      legend: { display: false },
-      scale: {
-        ticks: {
-          beginAtZero: true,
-          max: 100,
-          stepSize: 25,
-          display: false,
-        },
-        gridLines: {
-          color: "rgba(200, 39, 77, 0.1)",
-        },
-        angleLines: {
-          color: "rgba(200, 39, 77, 0.1)",
-        },
-        pointLabels: {
-          fontSize: 12,
-          fontColor: "#666",
-        },
-      },
-    },
-  };
-
-  const encoded = encodeURIComponent(JSON.stringify(config));
-  return `https://quickchart.io/chart?c=${encoded}&w=400&h=400&backgroundColor=white`;
-}
-
 export async function POST(request: Request) {
   try {
-    const { email, profile, radarScores } = (await request.json()) as {
+    const { email, profile, radarImage } = (await request.json()) as {
       email: string;
       profile?: ProfileResult;
-      radarScores?: RadarScores;
+      radarImage?: string; // base64 PNG
     };
 
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    const radarChartHtml = radarScores
+    const radarChartHtml = radarImage
       ? `
           <div style="text-align: center; margin: 20px 0 8px;">
-            <img src="${buildRadarChartUrl(radarScores)}" alt="Твоят профил" width="360" height="360" style="max-width: 100%; height: auto; border-radius: 12px;" />
+            <img src="cid:radar-chart" alt="Твоят профил" width="360" height="360" style="max-width: 100%; height: auto; border-radius: 12px;" />
           </div>
         `
       : "";
@@ -91,12 +36,23 @@ export async function POST(request: Request) {
         `
       : "";
 
+    const attachments = radarImage
+      ? [
+          {
+            filename: "radar-chart.png",
+            content: Buffer.from(radarImage, "base64"),
+            cid: "radar-chart",
+          },
+        ]
+      : [];
+
     await resend.emails.send({
       from: "1NTENT <hello@1ntent.eu>",
       to: email,
       subject: profile
         ? `Ти си "${profile.title}": ето какво означава това`
         : "Благодарим за теста!",
+      attachments,
       html: `
         <div style="font-family: 'Georgia', serif; max-width: 480px; margin: 0 auto; padding: 40px 24px;">
           <div style="text-align: center; padding: 20px 0 10px;">
