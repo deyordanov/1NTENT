@@ -6,9 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { trackEvent } from "@/lib/analytics";
-import { ProfileCard } from "@/components/profile-card";
-import { ProfileResult } from "@/types";
-import { RadarScores } from "@/lib/scoring";
 
 const CONFETTI_COUNT = 40;
 const confettiColors = [
@@ -88,18 +85,7 @@ export default function ConfirmationPage() {
   const [referralCode, setReferralCode] = useState("");
   const [referralCopied, setReferralCopied] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
-  const [profile, setProfile] = useState<ProfileResult | null>(null);
-  const [radarScores, setRadarScores] = useState<RadarScores | null>(null);
-
   useEffect(() => {
-    // Get profile and radar scores
-    try {
-      const storedProfile = sessionStorage.getItem("1ntent_profile");
-      const storedRadar = sessionStorage.getItem("1ntent_radar");
-      if (storedProfile) setProfile(JSON.parse(storedProfile));
-      if (storedRadar) setRadarScores(JSON.parse(storedRadar));
-    } catch {}
-
     // Get referral code and share ID from signup flow
     const storedCode = sessionStorage.getItem("1ntent_referral_code");
     if (storedCode) {
@@ -211,15 +197,6 @@ export default function ConfirmationPage() {
             </a>
           </div>
 
-          {/* Shareable profile card */}
-          {profile && radarScores && (
-            <ProfileCard
-              profile={profile}
-              scores={radarScores}
-              onDownload={() => trackEvent("CardDownloaded")}
-            />
-          )}
-
           {/* Share results CTA */}
           <motion.div
             className="mt-6 rounded-xl border border-border/40 bg-muted/30 p-5"
@@ -237,8 +214,8 @@ export default function ConfirmationPage() {
             {/* Copy link button — full width, prominent */}
             <button
               onClick={() => {
-                const fallback = typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg";
-                const url = shareUrl || `${fallback}?ref=${referralCode}`;
+                const origin = typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg";
+                const url = shareUrl || (referralCode ? `${origin}?ref=${referralCode}` : `${origin}/test`);
                 copyToClipboard(url);
                 setReferralCopied(true);
                 trackEvent("ReferralCopied");
@@ -257,7 +234,7 @@ export default function ConfirmationPage() {
                 href={`https://wa.me/?text=${encodeURIComponent(
                   shareUrl
                     ? `Виж моя личностен профил и попълни своя тест! ${shareUrl}`
-                    : `Открий кой наистина ти подхожда ${typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg"}?ref=${referralCode}`
+                    : `Открий кой наистина ти подхожда ${typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg"}/test`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -271,7 +248,7 @@ export default function ConfirmationPage() {
                 href={`viber://forward?text=${encodeURIComponent(
                   shareUrl
                     ? `Виж моя личностен профил и попълни своя тест! ${shareUrl}`
-                    : `Открий кой наистина ти подхожда ${typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg"}?ref=${referralCode}`
+                    : `Открий кой наистина ти подхожда ${typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg"}/test`
                 )}`}
                 onClick={() => trackEvent("ReferralShared", { channel: "viber" })}
                 className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#7360F2] px-3 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"

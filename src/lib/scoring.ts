@@ -172,5 +172,38 @@ export function computeRadarScores(answers: Answers): RadarScores {
   return scores;
 }
 
+// Rarity percentages per profile (designed to feel special)
+export const profileRarity: Record<ProfileType, number> = {
+  ready: 18,
+  selective: 12,
+  grounded: 22,
+  emerging: 14,
+};
+
+// Compute compatibility % between two radar score sets
+export function computeCompatibility(a: RadarScores, b: RadarScores): number {
+  const dims = Object.keys(a) as RadarDimension[];
+  let totalSimilarity = 0;
+
+  for (const dim of dims) {
+    const diff = Math.abs(a[dim] - b[dim]);
+    // Complementary scoring: some dimensions match better when similar,
+    // others when complementary
+    if (dim === "openness" || dim === "emotionalDepth") {
+      // Complementary dimensions — moderate difference is ideal
+      const idealDiff = 20;
+      totalSimilarity += Math.max(0, 100 - Math.abs(diff - idealDiff) * 1.5);
+    } else {
+      // Alignment dimensions — similarity is better
+      totalSimilarity += Math.max(0, 100 - diff * 1.2);
+    }
+  }
+
+  // Average across dimensions, add a base so it never feels too low
+  const raw = totalSimilarity / dims.length;
+  // Scale to 62-96 range (nobody wants to see <60%, nobody believes 100%)
+  return Math.round(62 + (raw / 100) * 34);
+}
+
 // Export profile data for use in other components
 export { profiles };

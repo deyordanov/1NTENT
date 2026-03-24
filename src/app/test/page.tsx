@@ -56,6 +56,7 @@ function PulseRing({ isActive }: { isActive: boolean }) {
 
 export default function TestPage() {
   const router = useRouter();
+  const [compareId, setCompareId] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [direction, setDirection] = useState(1);
@@ -68,6 +69,11 @@ export default function TestPage() {
   const cardRef = useRef<HTMLDivElement>(null);
   const currentIndexRef = useRef(currentIndex);
   const completedRef = useRef(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setCompareId(params.get("compare"));
+  }, []);
 
   useEffect(() => {
     currentIndexRef.current = currentIndex;
@@ -181,7 +187,12 @@ export default function TestPage() {
         JSON.stringify({ answers: updated, profile, radarScores })
       );
       localStorage.removeItem("1ntent_test_progress");
-      setTimeout(() => router.push("/signup"), 600);
+      // If comparing with someone, redirect to their results page
+      if (compareId) {
+        setTimeout(() => router.push(`/results/${compareId}`), 600);
+      } else {
+        setTimeout(() => router.push("/signup"), 600);
+      }
     } else {
       const nextIndex = currentIndex + 1;
       localStorage.setItem(

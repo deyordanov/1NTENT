@@ -6,7 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { Answers, ProfileResult } from "@/types";
-import { RadarScores } from "@/lib/scoring";
+import { RadarScores, profileRarity } from "@/lib/scoring";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/logo";
@@ -118,12 +118,14 @@ export default function SignupPage() {
           setError("Този имейл вече е регистриран.");
         } else {
           console.warn("Supabase error, proceeding without saving:", userError);
+          trackEvent("EmailSubmitted");
+          await saveShareResult(testData.profile, testData.radarScores);
           sessionStorage.removeItem("testData");
           sessionStorage.removeItem("1ntent_ref");
           sessionStorage.setItem("1ntent_referral_code", referralCode);
           sessionStorage.setItem("1ntent_profile", JSON.stringify(testData.profile));
-      sessionStorage.setItem("1ntent_radar", JSON.stringify(testData.radarScores));
-      router.push("/confirmation");
+          sessionStorage.setItem("1ntent_radar", JSON.stringify(testData.radarScores));
+          router.push("/confirmation");
         }
         setLoading(false);
         return;
@@ -225,6 +227,19 @@ export default function SignupPage() {
             >
               {profile.subtitle}
             </motion.p>
+
+            {/* Rarity badge */}
+            <motion.div
+              className="mx-auto mt-3 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.7, type: "spring", stiffness: 200 }}
+            >
+              <span className="text-xs">✦</span>
+              <span className="text-xs font-medium text-primary">
+                Само {profileRarity[profile.type]}% от хората
+              </span>
+            </motion.div>
           </div>
 
           {/* Radar chart — blurred */}
