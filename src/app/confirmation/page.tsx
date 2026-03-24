@@ -69,13 +69,20 @@ export default function ConfirmationPage() {
   const [copied, setCopied] = useState(false);
   const [referralCode, setReferralCode] = useState("");
   const [referralCopied, setReferralCopied] = useState(false);
+  const [shareUrl, setShareUrl] = useState("");
 
   useEffect(() => {
-    // Get referral code from signup flow
+    // Get referral code and share ID from signup flow
     const storedCode = sessionStorage.getItem("1ntent_referral_code");
     if (storedCode) {
       setReferralCode(storedCode);
       sessionStorage.removeItem("1ntent_referral_code");
+    }
+    const shareId = sessionStorage.getItem("1ntent_share_id");
+    if (shareId) {
+      const origin = typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg";
+      setShareUrl(`${origin}/results/${shareId}`);
+      sessionStorage.removeItem("1ntent_share_id");
     }
 
     const pieces = Array.from({ length: CONFETTI_COUNT }, (_, i) => i);
@@ -86,9 +93,9 @@ export default function ConfirmationPage() {
   }, []);
 
   function handleShare() {
-    const url = typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg";
+    const url = shareUrl || (typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg");
     if (navigator.share) {
-      navigator.share({ title: "1NTENT", text: "Открий човека, който наистина ти подхожда.", url });
+      navigator.share({ title: "1NTENT", text: shareUrl ? "Виж моя личностен профил!" : "Открий човека, който наистина ти подхожда.", url });
     } else {
       copyToClipboard(url);
       setCopied(true);
@@ -184,19 +191,21 @@ export default function ConfirmationPage() {
             transition={{ delay: 0.8 }}
           >
             <p className="text-sm font-medium text-foreground">
-              Сподели с приятел и ще разгледаме профила ти по-бързо
+              Сподели профила си и ще разгледаме твоя по-бързо
             </p>
-            <p className="mt-1.5 text-xs text-muted-foreground">
-              Твоят код за препоръка:
-            </p>
+            {shareUrl && (
+              <p className="mt-1.5 text-xs text-muted-foreground">
+                Приятелите ти ще видят твоя резултат и могат да попълнят своя тест.
+              </p>
+            )}
             <div className="mt-3 flex items-center gap-2">
               <div className="flex-1 rounded-lg border border-border/60 bg-white px-4 py-2.5 text-center font-mono text-lg font-bold tracking-widest text-foreground">
                 {referralCode}
               </div>
               <button
                 onClick={() => {
-                  const url = typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg";
-                  copyToClipboard(`${url}?ref=${referralCode}`);
+                  const fallback = typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg";
+                  copyToClipboard(shareUrl || `${fallback}?ref=${referralCode}`);
                   setReferralCopied(true);
                   trackEvent("ReferralCopied");
                   setTimeout(() => setReferralCopied(false), 2000);
@@ -209,7 +218,9 @@ export default function ConfirmationPage() {
             <div className="mt-4 flex items-center gap-2">
               <a
                 href={`https://wa.me/?text=${encodeURIComponent(
-                  `Открий кой наистина ти подхожда 💕 ${typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg"}?ref=${referralCode}`
+                  shareUrl
+                    ? `Виж моя личностен профил и попълни своя тест! ${shareUrl}`
+                    : `Открий кой наистина ти подхожда ${typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg"}?ref=${referralCode}`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -221,7 +232,9 @@ export default function ConfirmationPage() {
               </a>
               <a
                 href={`viber://forward?text=${encodeURIComponent(
-                  `Открий кой наистина ти подхожда ${typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg"}?ref=${referralCode}`
+                  shareUrl
+                    ? `Виж моя личностен профил и попълни своя тест! ${shareUrl}`
+                    : `Открий кой наистина ти подхожда ${typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg"}?ref=${referralCode}`
                 )}`}
                 onClick={() => trackEvent("ReferralShared", { channel: "viber" })}
                 className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#7360F2] px-3 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"

@@ -63,6 +63,20 @@ export default function SignupPage() {
     return code;
   }, []);
 
+  async function saveShareResult(profile: ProfileResult, radarScores: RadarScores) {
+    try {
+      const res = await fetch("/api/share-result", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ profile, radarScores }),
+      });
+      const data = await res.json();
+      if (data.id) {
+        sessionStorage.setItem("1ntent_share_id", data.id);
+      }
+    } catch {}
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!testData) return;
@@ -112,6 +126,7 @@ export default function SignupPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, profile: testData.profile }),
       }).catch(() => {});
+      await saveShareResult(testData.profile, testData.radarScores);
 
       sessionStorage.removeItem("testData");
       sessionStorage.removeItem("1ntent_ref");
@@ -125,6 +140,7 @@ export default function SignupPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, profile: testData.profile }),
       }).catch(() => {});
+      await saveShareResult(testData.profile, testData.radarScores);
       sessionStorage.removeItem("testData");
       sessionStorage.removeItem("1ntent_ref");
       sessionStorage.setItem("1ntent_referral_code", referralCode);
