@@ -162,7 +162,7 @@ export default function SharedResultPage() {
             transition={{ delay: 1.1 }}
           >
             <p className="mb-4 font-serif text-lg font-semibold">
-              Любопитен/а ли си какъв е <span className="italic text-primary">твоят</span> профил?
+              Искаш ли да разбереш <span className="italic text-primary">твоя</span> профил?
             </p>
             <Link href="/test">
               <Button size="lg" className="rounded-full px-8 py-6 text-base shadow-lg shadow-primary/20">

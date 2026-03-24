@@ -121,7 +121,9 @@ export default function SignupPage() {
           sessionStorage.removeItem("testData");
           sessionStorage.removeItem("1ntent_ref");
           sessionStorage.setItem("1ntent_referral_code", referralCode);
-          router.push("/confirmation");
+          sessionStorage.setItem("1ntent_profile", JSON.stringify(testData.profile));
+      sessionStorage.setItem("1ntent_radar", JSON.stringify(testData.radarScores));
+      router.push("/confirmation");
         }
         setLoading(false);
         return;
@@ -146,6 +148,8 @@ export default function SignupPage() {
       sessionStorage.removeItem("testData");
       sessionStorage.removeItem("1ntent_ref");
       sessionStorage.setItem("1ntent_referral_code", user.referral_code);
+      sessionStorage.setItem("1ntent_profile", JSON.stringify(testData.profile));
+      sessionStorage.setItem("1ntent_radar", JSON.stringify(testData.radarScores));
       router.push("/confirmation");
     } catch {
       console.warn("Supabase not available, proceeding without saving");
@@ -159,6 +163,8 @@ export default function SignupPage() {
       sessionStorage.removeItem("testData");
       sessionStorage.removeItem("1ntent_ref");
       sessionStorage.setItem("1ntent_referral_code", referralCode);
+      sessionStorage.setItem("1ntent_profile", JSON.stringify(testData.profile));
+      sessionStorage.setItem("1ntent_radar", JSON.stringify(testData.radarScores));
       router.push("/confirmation");
     }
   }

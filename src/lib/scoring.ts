@@ -22,7 +22,7 @@ const profiles: Record<ProfileType, ProfileResult> = {
     title: "Заземеният търсач",
     subtitle: "The Grounded Seeker",
     description:
-      "Ценеш стабилността и дълбочината пред вълнението. Строиш живот, не само история. Качеството пред количеството е твоето мото.",
+      "Цениш стабилността и дълбочината пред вълнението. Строиш живот, не само история. Качеството пред количеството е твоето мото.",
     emoji: "🧭",
   },
   emerging: {
@@ -103,7 +103,7 @@ export type RadarDimension = "readiness" | "emotionalDepth" | "intentionality" |
 
 export const radarLabels: Record<RadarDimension, string> = {
   readiness: "Готовност",
-  emotionalDepth: "Емоционална дълбочина",
+  emotionalDepth: "Емоционалност",
   intentionality: "Целенасоченост",
   stability: "Стабилност",
   openness: "Откритост",

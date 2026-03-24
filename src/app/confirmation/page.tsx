@@ -6,6 +6,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { trackEvent } from "@/lib/analytics";
+import { ProfileCard } from "@/components/profile-card";
+import { ProfileResult } from "@/types";
+import { RadarScores } from "@/lib/scoring";
 
 const CONFETTI_COUNT = 40;
 const confettiColors = [
@@ -85,8 +88,18 @@ export default function ConfirmationPage() {
   const [referralCode, setReferralCode] = useState("");
   const [referralCopied, setReferralCopied] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
+  const [profile, setProfile] = useState<ProfileResult | null>(null);
+  const [radarScores, setRadarScores] = useState<RadarScores | null>(null);
 
   useEffect(() => {
+    // Get profile and radar scores
+    try {
+      const storedProfile = sessionStorage.getItem("1ntent_profile");
+      const storedRadar = sessionStorage.getItem("1ntent_radar");
+      if (storedProfile) setProfile(JSON.parse(storedProfile));
+      if (storedRadar) setRadarScores(JSON.parse(storedRadar));
+    } catch {}
+
     // Get referral code and share ID from signup flow
     const storedCode = sessionStorage.getItem("1ntent_referral_code");
     if (storedCode) {
@@ -197,6 +210,15 @@ export default function ConfirmationPage() {
               </Button>
             </a>
           </div>
+
+          {/* Shareable profile card */}
+          {profile && radarScores && (
+            <ProfileCard
+              profile={profile}
+              scores={radarScores}
+              onDownload={() => trackEvent("CardDownloaded")}
+            />
+          )}
 
           {/* Share results CTA */}
           <motion.div

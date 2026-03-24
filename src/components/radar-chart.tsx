@@ -13,7 +13,7 @@ const dimensions: RadarDimension[] = [
 
 const cx = 150;
 const cy = 150;
-const maxR = 110;
+const maxR = 120;
 const levels = 4;
 
 function polarToCart(angle: number, radius: number) {
@@ -21,10 +21,10 @@ function polarToCart(angle: number, radius: number) {
   return { x: cx + radius * Math.cos(rad), y: cy + radius * Math.sin(rad) };
 }
 
-function getPoints(scores: RadarScores, scale = 1) {
+function getPoints(scores: RadarScores) {
   return dimensions.map((dim, i) => {
     const angle = (360 / dimensions.length) * i;
-    const r = (scores[dim] / 100) * maxR * scale;
+    const r = (scores[dim] / 100) * maxR;
     return polarToCart(angle, r);
   });
 }
@@ -36,114 +36,207 @@ interface RadarChartProps {
 
 export function RadarChart({ scores, blurred = false }: RadarChartProps) {
   const points = getPoints(scores);
-  const pathD = points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ") + " Z";
+  const pathD =
+    points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ") +
+    " Z";
+
+  // Label positions as percentages for HTML overlay
+  const labelPositions = dimensions.map((_, i) => {
+    const angle = (360 / dimensions.length) * i;
+    const pos = polarToCart(angle, maxR - 2);
+    // Convert to percentage of the 300x300 viewBox
+    return {
+      left: `${(pos.x / 300) * 100}%`,
+      top: `${(pos.y / 300) * 100}%`,
+      angle,
+    };
+  });
 
   return (
     <div className={`relative ${blurred ? "select-none" : ""}`}>
-      <svg
-        viewBox="-20 -20 340 340"
-        className="mx-auto w-full max-w-[300px]"
+      {/* Chart container with padding for labels */}
+      <div
+        className="relative mx-auto w-full max-w-[400px] px-8 py-6"
         style={blurred ? { filter: "blur(6px)" } : undefined}
       >
-        {/* Grid rings */}
-        {Array.from({ length: levels }, (_, i) => {
-          const r = (maxR / levels) * (i + 1);
-          const ringPoints = dimensions.map((_, j) => {
-            const angle = (360 / dimensions.length) * j;
-            return polarToCart(angle, r);
-          });
-          const d = ringPoints.map((p, j) => `${j === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ") + " Z";
-          return (
-            <path
-              key={i}
-              d={d}
-              fill="none"
-              stroke="hsl(346, 30%, 90%)"
-              strokeWidth={1}
-              opacity={0.6}
+        {/* SVG chart */}
+        <div className="relative">
+          <svg viewBox="0 0 300 300" className="w-full">
+            {/* Gradient definition */}
+            <defs>
+              <radialGradient id="chartGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="hsl(346, 77%, 50%)" stopOpacity="0.08" />
+                <stop offset="100%" stopColor="hsl(346, 77%, 50%)" stopOpacity="0" />
+              </radialGradient>
+              <linearGradient id="areaFill" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="hsl(346, 77%, 55%)" stopOpacity="0.2" />
+                <stop offset="100%" stopColor="hsl(346, 90%, 45%)" stopOpacity="0.08" />
+              </linearGradient>
+            </defs>
+
+            {/* Background glow */}
+            <circle cx={cx} cy={cy} r={maxR + 10} fill="url(#chartGlow)" />
+
+            {/* Grid rings with alternating fills */}
+            {Array.from({ length: levels }, (_, i) => {
+              const r = (maxR / levels) * (i + 1);
+              const outerPoints = dimensions.map((_, j) => {
+                const angle = (360 / dimensions.length) * j;
+                return polarToCart(angle, r);
+              });
+              const d =
+                outerPoints
+                  .map((p, j) => `${j === 0 ? "M" : "L"} ${p.x} ${p.y}`)
+                  .join(" ") + " Z";
+              return (
+                <g key={i}>
+                  {/* Alternating subtle fill */}
+                  {i % 2 === 0 && (
+                    <path
+                      d={d}
+                      fill="hsl(346, 20%, 96%)"
+                      opacity={0.4}
+                    />
+                  )}
+                  <path
+                    d={d}
+                    fill="none"
+                    stroke="hsl(346, 15%, 88%)"
+                    strokeWidth={0.8}
+                    strokeDasharray={i < levels - 1 ? "4 3" : "0"}
+                    opacity={0.7}
+                  />
+                </g>
+              );
+            })}
+
+            {/* Axis lines — subtle */}
+            {dimensions.map((_, i) => {
+              const angle = (360 / dimensions.length) * i;
+              const end = polarToCart(angle, maxR);
+              return (
+                <line
+                  key={i}
+                  x1={cx}
+                  y1={cy}
+                  x2={end.x}
+                  y2={end.y}
+                  stroke="hsl(346, 15%, 85%)"
+                  strokeWidth={0.8}
+                />
+              );
+            })}
+
+            {/* Center dot */}
+            <circle cx={cx} cy={cy} r={2.5} fill="hsl(346, 30%, 80%)" />
+
+            {/* Filled area with gradient */}
+            <motion.path
+              d={pathD}
+              fill="url(#areaFill)"
+              stroke="hsl(346, 77%, 50%)"
+              strokeWidth={2.5}
+              strokeLinejoin="round"
+              initial={{ opacity: 0, scale: 0.2 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{
+                duration: 1,
+                delay: 0.3,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              style={{ transformOrigin: `${cx}px ${cy}px` }}
             />
-          );
-        })}
 
-        {/* Axis lines */}
-        {dimensions.map((_, i) => {
-          const angle = (360 / dimensions.length) * i;
-          const end = polarToCart(angle, maxR);
-          return (
-            <line
-              key={i}
-              x1={cx}
-              y1={cy}
-              x2={end.x}
-              y2={end.y}
-              stroke="hsl(346, 20%, 88%)"
-              strokeWidth={1}
-            />
-          );
-        })}
+            {/* Data points with pulse rings */}
+            {points.map((p, i) => (
+              <g key={i}>
+                {/* Outer pulse */}
+                <motion.circle
+                  cx={p.x}
+                  cy={p.y}
+                  r={8}
+                  fill="none"
+                  stroke="hsl(346, 77%, 50%)"
+                  strokeWidth={1}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: [0, 0.3, 0], scale: [0.5, 1.5, 2] }}
+                  transition={{
+                    duration: 2,
+                    delay: 1 + i * 0.2,
+                    repeat: Infinity,
+                    repeatDelay: 3,
+                  }}
+                  style={{ transformOrigin: `${p.x}px ${p.y}px` }}
+                />
+                {/* Inner dot */}
+                <motion.circle
+                  cx={p.x}
+                  cy={p.y}
+                  r={5}
+                  fill="white"
+                  stroke="hsl(346, 77%, 50%)"
+                  strokeWidth={2.5}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: 0.6 + i * 0.12,
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 15,
+                  }}
+                />
+              </g>
+            ))}
+          </svg>
+        </div>
 
-        {/* Filled area */}
-        <motion.path
-          d={pathD}
-          fill="hsla(346, 77%, 50%, 0.12)"
-          stroke="hsl(346, 77%, 50%)"
-          strokeWidth={2}
-          initial={{ opacity: 0, scale: 0.3 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          style={{ transformOrigin: `${cx}px ${cy}px` }}
-        />
-
-        {/* Data points */}
-        {points.map((p, i) => (
-          <motion.circle
-            key={i}
-            cx={p.x}
-            cy={p.y}
-            r={4}
-            fill="hsl(346, 77%, 50%)"
-            stroke="white"
-            strokeWidth={2}
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4, delay: 0.5 + i * 0.1 }}
-          />
-        ))}
-
-        {/* Labels */}
+        {/* HTML labels positioned around chart */}
         {dimensions.map((dim, i) => {
-          const angle = (360 / dimensions.length) * i;
-          const labelR = maxR + 24;
-          const pos = polarToCart(angle, labelR);
+          const { left, top, angle } = labelPositions[i];
           const score = scores[dim];
+          const normalizedAngle = ((angle % 360) + 360) % 360;
+
+          // Alignment based on position
+          let translateX = "-50%";
+          let textAlign: "left" | "center" | "right" = "center";
+          if (normalizedAngle > 30 && normalizedAngle < 150) {
+            translateX = "0%";
+            textAlign = "left";
+          } else if (normalizedAngle > 210 && normalizedAngle < 330) {
+            translateX = "-100%";
+            textAlign = "right";
+          }
+
+          // Top label needs more upward offset
+          let translateY = "-50%";
+          if (normalizedAngle < 30 || normalizedAngle > 330) translateY = "-100%";
+          if (normalizedAngle > 150 && normalizedAngle < 210) translateY = "0%";
 
           return (
-            <motion.g
+            <motion.div
               key={dim}
+              className="absolute pointer-events-none"
+              style={{
+                left,
+                top,
+                transform: `translate(${translateX}, ${translateY})`,
+                textAlign,
+              }}
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.4, delay: 0.8 + i * 0.08 }}
+              animate={{ opacity: blurred ? 0.5 : 1 }}
+              transition={{ duration: 0.4, delay: 0.9 + i * 0.08 }}
             >
-              <text
-                x={pos.x}
-                y={pos.y - 6}
-                textAnchor="middle"
-                className="fill-muted-foreground text-[10px] font-medium"
-              >
+              <p className="text-[11px] font-semibold tracking-wide text-muted-foreground/80">
                 {radarLabels[dim]}
-              </text>
-              <text
-                x={pos.x}
-                y={pos.y + 8}
-                textAnchor="middle"
-                className="fill-primary text-[11px] font-bold"
-              >
+              </p>
+              <p className="text-sm font-bold text-primary">
                 {blurred ? "••" : `${score}%`}
-              </text>
-            </motion.g>
+              </p>
+            </motion.div>
           );
         })}
-      </svg>
+      </div>
     </div>
   );
 }
