@@ -3,7 +3,7 @@ import { Answers, ProfileResult, ProfileType } from "@/types";
 const profiles: Record<ProfileType, ProfileResult> = {
   ready: {
     type: "ready",
-    title: "Готовият",
+    title: "Готовия",
     subtitle: "The Ready One",
     description:
       "Знаеш какво искаш и не искаш да губиш повече време. Търсиш някой с еднакво ясни намерения. 1NTENT е създаден за хора като теб.",
@@ -27,7 +27,7 @@ const profiles: Record<ProfileType, ProfileResult> = {
   },
   emerging: {
     type: "emerging",
-    title: "Израстващият",
+    title: "Израстващия",
     subtitle: "The Emerging One",
     description:
       "В преход си: растеш, преоткриваш се или просто искаш нещата да са различни този път. Готово е за нов начин. 1NTENT може да помогне.",

@@ -96,12 +96,12 @@ function pick<T>(arr: T[], seed: number): T {
 function getComparison(annualCost: number): string {
   if (annualCost >= 80000) return pick([
     "Първоначална вноска за апартамент в центъра на София.",
-    "Чисто нов Mercedes A-Class, похарчен за безцелни запознанства.",
+    "Съвсем нов Mercedes A-Class, похарчен за безцелни запознанства.",
     "Две години наем в луксозен апартамент.",
   ], annualCost);
   if (annualCost >= 40000) return pick([
     "Година в международно бизнес училище.",
-    "Околосветско пътуване за двама с първа класа.",
+    "Околосветско пътуване за двама в първа класа.",
     "Нова кухня, баня и ремонт на хола.",
   ], annualCost);
   if (annualCost >= 15000) return pick([
@@ -124,7 +124,7 @@ function getComparison(annualCost: number): string {
 function getHoursComparison(annualHours: number): string {
   const workDays = Math.round(annualHours / 8);
   if (workDays >= 30) return pick([
-    `${workDays} работни дни. Повече от месец от живота ти, всяка година.`,
+    `${workDays} работни дни. Месец от живота ти, всяка година.`,
     `${workDays} дни. Можеше да научиш нов език за това време.`,
   ], annualHours);
   if (workDays >= 10) return pick([
