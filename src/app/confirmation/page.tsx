@@ -198,7 +198,7 @@ export default function ConfirmationPage() {
             </a>
           </div>
 
-          {/* Referral CTA */}
+          {/* Share results CTA */}
           <motion.div
             className="mt-6 rounded-xl border border-border/40 bg-muted/30 p-5"
             initial={{ opacity: 0, y: 10 }}
@@ -206,30 +206,30 @@ export default function ConfirmationPage() {
             transition={{ delay: 0.8 }}
           >
             <p className="text-sm font-medium text-foreground">
-              Сподели профила си и ще разгледаме твоя по-бързо
+              Сподели резултата си с приятели
             </p>
-            {shareUrl && (
-              <p className="mt-1.5 text-xs text-muted-foreground">
-                Приятелите ти ще видят твоя резултат и могат да попълнят своя тест.
-              </p>
-            )}
-            <div className="mt-3 flex items-center gap-2">
-              <div className="flex-1 rounded-lg border border-border/60 bg-white px-4 py-2.5 text-center font-mono text-lg font-bold tracking-widest text-foreground">
-                {referralCode}
-              </div>
-              <button
-                onClick={() => {
-                  const fallback = typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg";
-                  copyToClipboard(shareUrl || `${fallback}?ref=${referralCode}`);
-                  setReferralCopied(true);
-                  trackEvent("ReferralCopied");
-                  setTimeout(() => setReferralCopied(false), 2000);
-                }}
-                className="rounded-lg border border-primary/30 bg-primary/5 px-4 py-2.5 text-sm font-medium text-primary transition-all hover:bg-primary/10"
-              >
-                {referralCopied ? "Копирано!" : "Копирай линк"}
-              </button>
-            </div>
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              Те ще видят твоя профил и могат да попълнят своя тест.
+            </p>
+
+            {/* Copy link button — full width, prominent */}
+            <button
+              onClick={() => {
+                const fallback = typeof window !== "undefined" ? window.location.origin : "https://1ntent.bg";
+                const url = shareUrl || `${fallback}?ref=${referralCode}`;
+                copyToClipboard(url);
+                setReferralCopied(true);
+                trackEvent("ReferralCopied");
+                setTimeout(() => setReferralCopied(false), 2000);
+              }}
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-4 py-3 text-sm font-medium text-primary transition-all hover:bg-primary/10"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+              </svg>
+              {referralCopied ? "Копирано!" : "Копирай линк"}
+            </button>
             <div className="mt-4 flex items-center gap-2">
               <a
                 href={`https://wa.me/?text=${encodeURIComponent(

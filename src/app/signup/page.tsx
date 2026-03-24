@@ -51,7 +51,22 @@ export default function SignupPage() {
       router.push("/test");
       return;
     }
-    setTestData(JSON.parse(stored));
+    const parsed = JSON.parse(stored);
+    setTestData(parsed);
+
+    // Save share result immediately so it's ready for the confirmation page
+    if (!sessionStorage.getItem("1ntent_share_id")) {
+      fetch("/api/share-result", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ profile: parsed.profile, radarScores: parsed.radarScores }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.id) sessionStorage.setItem("1ntent_share_id", data.id);
+        })
+        .catch(() => {});
+    }
   }, [router]);
 
   const generateCode = useCallback(() => {
