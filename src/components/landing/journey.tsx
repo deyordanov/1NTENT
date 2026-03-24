@@ -27,8 +27,19 @@ const steps = [
   },
 ];
 
-function StepItem({ step, index, total }: { step: typeof steps[0]; index: number; total: number }) {
-  const [isActive, setIsActive] = useState(false);
+function StepItem({
+  step,
+  index,
+  total,
+  isActive,
+  onToggle,
+}: {
+  step: typeof steps[0];
+  index: number;
+  total: number;
+  isActive: boolean;
+  onToggle: () => void;
+}) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
 
@@ -36,9 +47,9 @@ function StepItem({ step, index, total }: { step: typeof steps[0]; index: number
     <motion.div
       ref={ref}
       className="group relative cursor-pointer py-8 pl-20 sm:pl-24"
-      onMouseEnter={() => setIsActive(true)}
-      onMouseLeave={() => setIsActive(false)}
-      onClick={() => setIsActive((v) => !v)}
+      onMouseEnter={onToggle}
+      onMouseLeave={() => {}}
+      onClick={onToggle}
       initial={{ opacity: 0, x: -30 }}
       animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
       transition={{
@@ -47,7 +58,7 @@ function StepItem({ step, index, total }: { step: typeof steps[0]; index: number
         ease: [0.22, 1, 0.36, 1],
       }}
     >
-      {/* Connector line segment — between circles, not through them */}
+      {/* Connector line segment */}
       {index < total - 1 && (
         <div
           className="absolute left-[23px] top-[60px] bottom-[-32px] w-px sm:left-[27px]"
@@ -119,6 +130,7 @@ function StepItem({ step, index, total }: { step: typeof steps[0]; index: number
 export function Journey() {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   return (
     <section className="py-24 sm:py-32" ref={sectionRef}>
@@ -140,9 +152,19 @@ export function Journey() {
         </motion.div>
 
         {/* Timeline */}
-        <div className="relative">
+        <div
+          className="relative"
+          onMouseLeave={() => setActiveIndex(null)}
+        >
           {steps.map((step, i) => (
-            <StepItem key={i} step={step} index={i} total={steps.length} />
+            <StepItem
+              key={i}
+              step={step}
+              index={i}
+              total={steps.length}
+              isActive={activeIndex === i}
+              onToggle={() => setActiveIndex(activeIndex === i ? null : i)}
+            />
           ))}
         </div>
       </div>

@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       : "";
 
     await resend.emails.send({
-      from: "1NTENT <onboarding@resend.dev>",
+      from: "1NTENT <hello@1ntent.eu>",
       to: email,
       subject: profile
         ? `Ти си "${profile.title}": ето какво означава това`
