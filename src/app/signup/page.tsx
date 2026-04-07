@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { Answers, Gender, ProfileResult } from "@/types";
 import { RadarScores } from "@/lib/scoring";
+import { humanizeAnswers } from "@/lib/humanize";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/logo";
@@ -175,11 +176,16 @@ export default function SignupPage() {
         return;
       }
 
+      const humanAnswers = humanizeAnswers(
+        testData.answers,
+        testData.gender || "male"
+      );
+
       await supabase
         .from("test_results")
         .insert({
           user_id: user.id,
-          answers: testData.answers,
+          answers: humanAnswers,
           scores: testData.radarScores,
           profile_data: testData.profile,
           profile_type: testData.profile.type,
