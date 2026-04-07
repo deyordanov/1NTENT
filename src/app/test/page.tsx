@@ -346,7 +346,7 @@ export default function TestPage() {
             </div>
 
             <p className="mt-6 text-center text-xs text-muted-foreground/60">
-              25 въпроса &middot; около 10 минути
+              25 въпроса
             </p>
           </motion.div>
         </div>

@@ -25,7 +25,7 @@ export function CTAFooter() {
           className="mt-10"
         >
           <p className="mx-auto mb-8 max-w-md text-lg text-muted-foreground">
-            7 въпроса. Под 3 минути.
+            25 въпроса.
             <br />
             Едно запознанство, което наистина има значение.
           </p>

@@ -148,7 +148,7 @@ export default async function Image() {
             marginBottom: 20,
           }}
         >
-          7 въпроса · под 3 мин · безплатно
+          25 въпроса · безплатно
         </p>
 
         {/* Domain */}

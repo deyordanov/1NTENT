@@ -312,7 +312,7 @@ export default function SharedResultPage() {
                   </motion.div>
                 </Link>
                 <p className="mt-3 text-xs text-muted-foreground">
-                  Безплатно &middot; 7 въпроса &middot; под 3 мин
+                  Безплатно &middot; 25 въпроса
                 </p>
               </>
             )}
