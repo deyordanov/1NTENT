@@ -16,28 +16,91 @@ import { trackEvent } from "@/lib/analytics";
 
 
 // Common country codes — Bulgaria first, then frequent neighbours / EU
-const COUNTRY_CODES = [
-  { code: "+359", flag: "🇧🇬", name: "България" },
-  { code: "+30", flag: "🇬🇷", name: "Гърция" },
-  { code: "+40", flag: "🇷🇴", name: "Румъния" },
-  { code: "+381", flag: "🇷🇸", name: "Сърбия" },
-  { code: "+90", flag: "🇹🇷", name: "Турция" },
-  { code: "+44", flag: "🇬🇧", name: "Великобритания" },
-  { code: "+49", flag: "🇩🇪", name: "Германия" },
-  { code: "+33", flag: "🇫🇷", name: "Франция" },
-  { code: "+39", flag: "🇮🇹", name: "Италия" },
-  { code: "+34", flag: "🇪🇸", name: "Испания" },
-  { code: "+31", flag: "🇳🇱", name: "Нидерландия" },
-  { code: "+43", flag: "🇦🇹", name: "Австрия" },
-  { code: "+41", flag: "🇨🇭", name: "Швейцария" },
-  { code: "+1", flag: "🇺🇸", name: "САЩ / Канада" },
+// minDigits/maxDigits = expected number of digits AFTER the country code
+type CountryCode = {
+  code: string;
+  flag: string;
+  name: string;
+  minDigits: number;
+  maxDigits: number;
+};
+
+const COUNTRY_CODES: CountryCode[] = [
+  { code: "+359", flag: "🇧🇬", name: "България", minDigits: 8, maxDigits: 9 },
+  { code: "+30", flag: "🇬🇷", name: "Гърция", minDigits: 10, maxDigits: 10 },
+  { code: "+40", flag: "🇷🇴", name: "Румъния", minDigits: 9, maxDigits: 9 },
+  { code: "+381", flag: "🇷🇸", name: "Сърбия", minDigits: 8, maxDigits: 9 },
+  { code: "+90", flag: "🇹🇷", name: "Турция", minDigits: 10, maxDigits: 10 },
+  { code: "+44", flag: "🇬🇧", name: "Великобритания", minDigits: 10, maxDigits: 10 },
+  { code: "+49", flag: "🇩🇪", name: "Германия", minDigits: 10, maxDigits: 11 },
+  { code: "+33", flag: "🇫🇷", name: "Франция", minDigits: 9, maxDigits: 9 },
+  { code: "+39", flag: "🇮🇹", name: "Италия", minDigits: 9, maxDigits: 10 },
+  { code: "+34", flag: "🇪🇸", name: "Испания", minDigits: 9, maxDigits: 9 },
+  { code: "+31", flag: "🇳🇱", name: "Нидерландия", minDigits: 9, maxDigits: 9 },
+  { code: "+43", flag: "🇦🇹", name: "Австрия", minDigits: 10, maxDigits: 11 },
+  { code: "+41", flag: "🇨🇭", name: "Швейцария", minDigits: 9, maxDigits: 9 },
+  { code: "+1", flag: "🇺🇸", name: "САЩ / Канада", minDigits: 10, maxDigits: 10 },
 ];
+
+/**
+ * Strip the country code prefix and any leading 0 to get only the local subscriber digits.
+ */
+function extractLocalDigits(raw: string, countryCode: string): string {
+  let digits = raw.replace(/\D/g, "");
+  // Country code without the leading "+"
+  const ccDigits = countryCode.replace(/\D/g, "");
+  // If user pasted the international form, strip the country code
+  if (ccDigits && digits.startsWith(ccDigits)) {
+    digits = digits.slice(ccDigits.length);
+  }
+  // Strip a leading 0 (common local trunk prefix)
+  if (digits.startsWith("0")) digits = digits.replace(/^0+/, "");
+  return digits;
+}
+
+/**
+ * Validate a phone number against its selected country.
+ * Returns null if valid (or empty), or a Bulgarian error message string.
+ */
+function validatePhone(raw: string, countryCode: string): string | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return null; // empty is allowed (optional)
+
+  // Disallow obviously bad characters
+  if (!/^[\d\s()\-+]+$/.test(trimmed)) {
+    return "Невалидни символи в номера.";
+  }
+
+  const digits = extractLocalDigits(trimmed, countryCode);
+
+  if (digits.length === 0) {
+    return "Въведи валиден номер.";
+  }
+
+  const country = COUNTRY_CODES.find((c) => c.code === countryCode);
+  if (!country) return "Избери държава.";
+
+  if (digits.length < country.minDigits) {
+    return `Номерът е твърде кратък за ${country.name} (трябва ${country.minDigits}-${country.maxDigits} цифри).`;
+  }
+  if (digits.length > country.maxDigits) {
+    return `Номерът е твърде дълъг за ${country.name} (трябва ${country.minDigits}-${country.maxDigits} цифри).`;
+  }
+
+  return null;
+}
+
+/** Normalise the phone for storage: "+359 888123456" */
+function normalisePhone(raw: string, countryCode: string): string {
+  return `${countryCode} ${extractLocalDigits(raw, countryCode)}`;
+}
 
 export default function SignupPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [phoneCountry, setPhoneCountry] = useState("+359");
   const [phone, setPhone] = useState("");
+  const [phoneError, setPhoneError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [testData, setTestData] = useState<{
@@ -133,13 +196,20 @@ export default function SignupPage() {
     e.preventDefault();
     if (!testData) return;
 
+    // Final phone validation before submitting
+    const phoneValidationError = validatePhone(phone, phoneCountry);
+    if (phoneValidationError) {
+      setPhoneError(phoneValidationError);
+      return;
+    }
+
     setLoading(true);
     setError("");
 
     const referralCode = generateCode();
     const referredBy = sessionStorage.getItem("1ntent_ref") || null;
 
-    const fullPhone = phone.trim() ? `${phoneCountry} ${phone.trim()}` : null;
+    const fullPhone = phone.trim() ? normalisePhone(phone, phoneCountry) : null;
     try {
       const { data: user, error: userError } = await supabase
         .from("users")
@@ -359,27 +429,44 @@ export default function SignupPage() {
                 required
                 className="rounded-lg py-5 text-base"
               />
-              <div className="flex gap-2">
-                <select
-                  value={phoneCountry}
-                  onChange={(e) => setPhoneCountry(e.target.value)}
-                  className="rounded-lg border border-input bg-background px-3 py-3 text-base focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20"
-                  aria-label="Държавен код"
-                >
-                  {COUNTRY_CODES.map((c) => (
-                    <option key={c.code} value={c.code}>
-                      {c.flag} {c.code}
-                    </option>
-                  ))}
-                </select>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="Телефон (по желание)"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="flex-1 rounded-lg py-5 text-base"
-                />
+              <div>
+                <div className="flex gap-2">
+                  <select
+                    value={phoneCountry}
+                    onChange={(e) => {
+                      setPhoneCountry(e.target.value);
+                      setPhoneError(validatePhone(phone, e.target.value));
+                    }}
+                    className="rounded-lg border border-input bg-background px-3 py-3 text-base focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20"
+                    aria-label="Държавен код"
+                  >
+                    {COUNTRY_CODES.map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.flag} {c.code}
+                      </option>
+                    ))}
+                  </select>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    inputMode="tel"
+                    placeholder="Телефон (по желание)"
+                    value={phone}
+                    onChange={(e) => {
+                      setPhone(e.target.value);
+                      // clear error as user types — only re-show on blur/submit
+                      if (phoneError) setPhoneError(null);
+                    }}
+                    onBlur={() => setPhoneError(validatePhone(phone, phoneCountry))}
+                    aria-invalid={phoneError ? true : undefined}
+                    className={`flex-1 rounded-lg py-5 text-base ${
+                      phoneError ? "border-destructive focus-visible:ring-destructive/40" : ""
+                    }`}
+                  />
+                </div>
+                {phoneError && (
+                  <p className="mt-1.5 text-xs text-destructive">{phoneError}</p>
+                )}
               </div>
               {error && (
                 <p className="text-sm text-destructive">{error}</p>
