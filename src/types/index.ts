@@ -1,12 +1,14 @@
 // Question types for the Romantic Profile Test (Test 2)
 export interface ChoiceOption {
   label: string;
+  labelFemale?: string; // optional override when user is female
   value: string;
 }
 
 export interface SingleChoiceQuestion {
   id: string;
   text: string;
+  textFemale?: string;
   type: "choice";
   section?: string;
   options: ChoiceOption[];
@@ -15,6 +17,7 @@ export interface SingleChoiceQuestion {
 export interface MultiChoiceQuestion {
   id: string;
   text: string;
+  textFemale?: string;
   type: "multi";
   section?: string;
   options: ChoiceOption[];
@@ -24,6 +27,7 @@ export interface MultiChoiceQuestion {
 export interface ScaleQuestion {
   id: string;
   text: string;
+  textFemale?: string;
   type: "scale";
   section?: string;
   min: number;
@@ -35,6 +39,7 @@ export interface ScaleQuestion {
 export interface OpenQuestion {
   id: string;
   text: string;
+  textFemale?: string;
   type: "open";
   section?: string;
   placeholder?: string;

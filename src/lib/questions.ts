@@ -1,6 +1,7 @@
 import { Question } from "@/types";
 
 // Test 2 — Romantic Profile Test (25 questions, 5 sections)
+// `text` is the male form (default). `textFemale` overrides when user picks female.
 export const questions: Question[] = [
   // SECTION A — WHO YOU ARE (Big Five OCEAN)
   {
@@ -16,7 +17,8 @@ export const questions: Question[] = [
   {
     id: "q2",
     section: "Кой си ти",
-    text: "Склонен/а съм да планирам предварително, а не да действам спонтанно.",
+    text: "Склонен съм да планирам предварително, а не да действам спонтанно.",
+    textFemale: "Склонна съм да планирам предварително, а не да действам спонтанно.",
     type: "scale",
     min: 1,
     max: 5,
@@ -46,7 +48,8 @@ export const questions: Question[] = [
   {
     id: "q5",
     section: "Кой си ти",
-    text: "Любопитен/на съм за хора, много различни от мен.",
+    text: "Любопитен съм за хора, много различни от мен.",
+    textFemale: "Любопитна съм за хора, много различни от мен.",
     type: "scale",
     min: 1,
     max: 5,
@@ -58,7 +61,8 @@ export const questions: Question[] = [
   {
     id: "q6",
     section: "Как обичаш",
-    text: "Кое от следните те кара да се чувстваш най-обичан/а? (Избери 2)",
+    text: "Кое от следните те кара да се чувстваш най-обичан? (Избери 2)",
+    textFemale: "Кое от следните те кара да се чувстваш най-обичана? (Избери 2)",
     type: "multi",
     selectCount: 2,
     options: [
@@ -82,7 +86,8 @@ export const questions: Question[] = [
   {
     id: "q8",
     section: "Как обичаш",
-    text: "Когато съм влюбен/а, го усещам най-силно като...",
+    text: "Когато съм влюбен, го усещам най-силно като...",
+    textFemale: "Когато съм влюбена, го усещам най-силно като...",
     type: "choice",
     options: [
       { label: "Дълбока емоционална връзка и приятелство", value: "intimacy" },
@@ -105,6 +110,7 @@ export const questions: Question[] = [
     id: "q10",
     section: "Как обичаш",
     text: "Колко важно е партньорът ти да споделя твоите хобита?",
+    textFemale: "Колко важно е партньорът ти да споделя твоите хобита?",
     type: "scale",
     min: 1,
     max: 5,
@@ -186,7 +192,7 @@ export const questions: Question[] = [
     type: "choice",
     options: [
       { label: "Да, определено", value: "yes" },
-      { label: "Отворен/а съм за идеята", value: "open" },
+      { label: "Отворен съм за идеята", labelFemale: "Отворена съм за идеята", value: "open" },
       { label: "Не", value: "no" },
       { label: "Вече имам деца, не търся повече", value: "have" },
     ],
@@ -211,8 +217,8 @@ export const questions: Question[] = [
     options: [
       { label: "Опитвам да намеря компромис бързо", value: "compromise" },
       { label: "Първо слушам, после изразявам мнението си", value: "listen" },
-      { label: "Трудно ми е да оставам спокоен/а", value: "reactive" },
-      { label: "Склонен/а съм да избягвам трудни разговори", value: "avoid" },
+      { label: "Трудно ми е да оставам спокоен", labelFemale: "Трудно ми е да оставам спокойна", value: "reactive" },
+      { label: "Склонен съм да избягвам трудни разговори", labelFemale: "Склонна съм да избягвам трудни разговори", value: "avoid" },
     ],
   },
   {
@@ -243,10 +249,10 @@ export const questions: Question[] = [
     text: "Преди колко приключи последната ти значима връзка?",
     type: "choice",
     options: [
-      { label: "В момента сам/а, 2+ години", value: "long" },
+      { label: "В момента сам, 2+ години", labelFemale: "В момента сама, 2+ години", value: "long" },
       { label: "6 месеца до 2 години", value: "medium" },
       { label: "По-малко от 6 месеца", value: "recent" },
-      { label: "Никога не съм имал/а дългосрочна връзка", value: "never" },
+      { label: "Никога не съм имал дългосрочна връзка", labelFemale: "Никога не съм имала дългосрочна връзка", value: "never" },
     ],
   },
   {

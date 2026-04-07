@@ -136,6 +136,14 @@ export default function TestPage() {
   const currentAnswer = question ? answers[question.id] : undefined;
   const isLast = currentIndex === questions.length - 1;
 
+  // Pick gender-appropriate text for the question
+  const questionText =
+    gender === "female" && question?.textFemale ? question.textFemale : question?.text;
+  // Pick gender-appropriate label for an option
+  function optionLabel(opt: { label: string; labelFemale?: string }) {
+    return gender === "female" && opt.labelFemale ? opt.labelFemale : opt.label;
+  }
+
   const progressColor = useMotionValue(progress);
   const progressBg = useTransform(
     progressColor,
@@ -449,7 +457,7 @@ export default function TestPage() {
                 transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
               >
                 <h2 className="mb-8 font-serif text-xl font-semibold leading-relaxed sm:text-2xl">
-                  {question.text}
+                  {questionText}
                 </h2>
 
                 {/* Single choice */}
@@ -484,7 +492,7 @@ export default function TestPage() {
                             {String.fromCharCode(65 + i)}
                           </span>
 
-                          <span className="flex-1 font-medium">{option.label}</span>
+                          <span className="flex-1 font-medium">{optionLabel(option)}</span>
 
                           <AnimatePresence>
                             {isSelected && (
@@ -553,7 +561,7 @@ export default function TestPage() {
                             {order ?? "+"}
                           </span>
 
-                          <span className="flex-1 font-medium">{option.label}</span>
+                          <span className="flex-1 font-medium">{optionLabel(option)}</span>
                         </motion.button>
                       );
                     })}

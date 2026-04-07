@@ -14,9 +14,28 @@ import { RadarChart } from "@/components/radar-chart";
 import { trackEvent } from "@/lib/analytics";
 
 
+// Common country codes — Bulgaria first, then frequent neighbours / EU
+const COUNTRY_CODES = [
+  { code: "+359", flag: "🇧🇬", name: "България" },
+  { code: "+30", flag: "🇬🇷", name: "Гърция" },
+  { code: "+40", flag: "🇷🇴", name: "Румъния" },
+  { code: "+381", flag: "🇷🇸", name: "Сърбия" },
+  { code: "+90", flag: "🇹🇷", name: "Турция" },
+  { code: "+44", flag: "🇬🇧", name: "Великобритания" },
+  { code: "+49", flag: "🇩🇪", name: "Германия" },
+  { code: "+33", flag: "🇫🇷", name: "Франция" },
+  { code: "+39", flag: "🇮🇹", name: "Италия" },
+  { code: "+34", flag: "🇪🇸", name: "Испания" },
+  { code: "+31", flag: "🇳🇱", name: "Нидерландия" },
+  { code: "+43", flag: "🇦🇹", name: "Австрия" },
+  { code: "+41", flag: "🇨🇭", name: "Швейцария" },
+  { code: "+1", flag: "🇺🇸", name: "САЩ / Канада" },
+];
+
 export default function SignupPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [phoneCountry, setPhoneCountry] = useState("+359");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -119,12 +138,13 @@ export default function SignupPage() {
     const referralCode = generateCode();
     const referredBy = sessionStorage.getItem("1ntent_ref") || null;
 
+    const fullPhone = phone.trim() ? `${phoneCountry} ${phone.trim()}` : null;
     try {
       const { data: user, error: userError } = await supabase
         .from("users")
         .insert({
           email,
-          phone: phone || null,
+          phone: fullPhone,
           gender: testData.gender || null,
           referral_code: referralCode,
           referred_by: referredBy,
@@ -333,14 +353,28 @@ export default function SignupPage() {
                 required
                 className="rounded-lg py-5 text-base"
               />
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="Телефон (по желание)"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="rounded-lg py-5 text-base"
-              />
+              <div className="flex gap-2">
+                <select
+                  value={phoneCountry}
+                  onChange={(e) => setPhoneCountry(e.target.value)}
+                  className="rounded-lg border border-input bg-background px-3 py-3 text-base focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20"
+                  aria-label="Държавен код"
+                >
+                  {COUNTRY_CODES.map((c) => (
+                    <option key={c.code} value={c.code}>
+                      {c.flag} {c.code}
+                    </option>
+                  ))}
+                </select>
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="Телефон (по желание)"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="flex-1 rounded-lg py-5 text-base"
+                />
+              </div>
               {error && (
                 <p className="text-sm text-destructive">{error}</p>
               )}
