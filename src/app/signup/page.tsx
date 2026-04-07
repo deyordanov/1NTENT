@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
-import { Answers, ProfileResult } from "@/types";
+import { Answers, Gender, ProfileResult } from "@/types";
 import { RadarScores } from "@/lib/scoring";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,12 +17,14 @@ import { trackEvent } from "@/lib/analytics";
 export default function SignupPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [testData, setTestData] = useState<{
     answers: Answers;
     profile: ProfileResult;
     radarScores: RadarScores;
+    gender?: Gender;
   } | null>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const [timeLeft, setTimeLeft] = useState("");
@@ -122,6 +124,8 @@ export default function SignupPage() {
         .from("users")
         .insert({
           email,
+          phone: phone || null,
+          gender: testData.gender || null,
           referral_code: referralCode,
           referred_by: referredBy,
         })
@@ -156,7 +160,8 @@ export default function SignupPage() {
         .insert({
           user_id: user.id,
           answers: testData.answers,
-          scores: testData.profile,
+          scores: testData.radarScores,
+          profile_data: testData.profile,
           profile_type: testData.profile.type,
         });
 
@@ -326,6 +331,14 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="rounded-lg py-5 text-base"
+              />
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="Телефон (по желание)"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 className="rounded-lg py-5 text-base"
               />
               {error && (

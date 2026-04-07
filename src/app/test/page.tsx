@@ -6,7 +6,7 @@ import Link from "next/link";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import { questions } from "@/lib/questions";
 import { computeProfile, computeRadarScores } from "@/lib/scoring";
-import { Answers } from "@/types";
+import { Answers, Gender } from "@/types";
 import { Logo } from "@/components/logo";
 import { trackEvent } from "@/lib/analytics";
 
@@ -57,6 +57,7 @@ function PulseRing({ isActive }: { isActive: boolean }) {
 export default function TestPage() {
   const router = useRouter();
   const [compareId, setCompareId] = useState<string | null>(null);
+  const [gender, setGender] = useState<Gender | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [direction, setDirection] = useState(1);
@@ -97,9 +98,12 @@ export default function TestPage() {
     try {
       const saved = localStorage.getItem("1ntent_test_progress");
       if (saved) {
-        const { answers: savedAnswers, index } = JSON.parse(saved);
+        const { answers: savedAnswers, index, gender: savedGender } = JSON.parse(saved);
         if (index > 0 && Object.keys(savedAnswers).length > 0) {
           setShowResume(true);
+        }
+        if (savedGender) {
+          // Don't auto-resume gender, only show prompt
         }
       }
     } catch {}
@@ -109,9 +113,10 @@ export default function TestPage() {
     try {
       const saved = localStorage.getItem("1ntent_test_progress");
       if (saved) {
-        const { answers: savedAnswers, index } = JSON.parse(saved);
+        const { answers: savedAnswers, index, gender: savedGender } = JSON.parse(saved);
         setAnswers(savedAnswers);
         setCurrentIndex(index);
+        if (savedGender) setGender(savedGender);
       }
     } catch {}
     setShowResume(false);
@@ -128,7 +133,7 @@ export default function TestPage() {
 
   const question = questions[currentIndex];
   const progress = ((currentIndex + 1) / questions.length) * 100;
-  const currentAnswer = answers[question.id];
+  const currentAnswer = question ? answers[question.id] : undefined;
   const isLast = currentIndex === questions.length - 1;
 
   const progressColor = useMotionValue(progress);
@@ -159,6 +164,40 @@ export default function TestPage() {
     }, 1000);
   }, []);
 
+  function persistProgress(updatedAnswers: Answers, nextIndex: number) {
+    localStorage.setItem(
+      "1ntent_test_progress",
+      JSON.stringify({ answers: updatedAnswers, index: nextIndex, gender })
+    );
+  }
+
+  function advanceOrFinish(updatedAnswers: Answers) {
+    if (isLast) {
+      const profile = computeProfile(updatedAnswers, gender || "male");
+      const radarScores = computeRadarScores(updatedAnswers);
+      sessionStorage.setItem(
+        "testData",
+        JSON.stringify({ answers: updatedAnswers, profile, radarScores, gender })
+      );
+      localStorage.removeItem("1ntent_test_progress");
+      if (compareId) {
+        setTimeout(() => router.push(`/results/${compareId}`), 600);
+      } else {
+        setTimeout(() => router.push("/signup"), 600);
+      }
+    } else {
+      const nextIndex = currentIndex + 1;
+      persistProgress(updatedAnswers, nextIndex);
+      setTimeout(() => {
+        setSelectedFlash(null);
+        setDirection(1);
+        setCurrentIndex((prev) => prev + 1);
+        setTransitioning(false);
+        setOpenText("");
+      }, 450);
+    }
+  }
+
   function handleSelectAnswer(value: string | number, e: React.MouseEvent) {
     if (transitioning) return;
     setTransitioning(true);
@@ -178,34 +217,53 @@ export default function TestPage() {
     spawnParticles(e, particleCount);
 
     setTimeout(() => setSelectedFlash(null), 300);
+    advanceOrFinish(updated);
+  }
 
-    if (isLast) {
-      const profile = computeProfile(updated);
-      const radarScores = computeRadarScores(updated);
-      sessionStorage.setItem(
-        "testData",
-        JSON.stringify({ answers: updated, profile, radarScores })
-      );
-      localStorage.removeItem("1ntent_test_progress");
-      // If comparing with someone, redirect to their results page
-      if (compareId) {
-        setTimeout(() => router.push(`/results/${compareId}`), 600);
-      } else {
-        setTimeout(() => router.push("/signup"), 600);
-      }
+  function handleMultiToggle(value: string, e: React.MouseEvent) {
+    if (transitioning || question.type !== "multi") return;
+
+    const current = Array.isArray(answers[question.id])
+      ? (answers[question.id] as string[])
+      : [];
+
+    let updated: string[];
+    if (current.includes(value)) {
+      updated = current.filter((v) => v !== value);
     } else {
-      const nextIndex = currentIndex + 1;
-      localStorage.setItem(
-        "1ntent_test_progress",
-        JSON.stringify({ answers: updated, index: nextIndex })
-      );
-      setTimeout(() => {
-        setSelectedFlash(null);
-        setDirection(1);
-        setCurrentIndex((prev) => prev + 1);
-        setTransitioning(false);
-      }, 450);
+      if (current.length >= question.selectCount) return; // max reached
+      updated = [...current, value];
+      // small particle pop on add
+      spawnParticles(e, 4);
     }
+
+    const updatedAnswers = { ...answers, [question.id]: updated };
+    setAnswers(updatedAnswers);
+
+    // Auto-advance when count is reached
+    if (updated.length === question.selectCount) {
+      setTransitioning(true);
+      if (Object.keys(answers).length === 0) trackEvent("TestStarted");
+      if (isLast) {
+        trackEvent("TestCompleted");
+        completedRef.current = true;
+      }
+      setTimeout(() => advanceOrFinish(updatedAnswers), 350);
+    }
+  }
+
+  function handleOpenSubmit(e: React.MouseEvent) {
+    if (transitioning || question.type !== "open") return;
+    if (openText.trim().length === 0) return;
+    setTransitioning(true);
+    const updated = { ...answers, [question.id]: openText.trim() };
+    setAnswers(updated);
+    if (isLast) {
+      trackEvent("TestCompleted");
+      completedRef.current = true;
+    }
+    spawnParticles(e, 5);
+    advanceOrFinish(updated);
   }
 
   function handleBack() {
@@ -214,6 +272,7 @@ export default function TestPage() {
       setSelectedFlash(null);
       setDirection(-1);
       setStreak(0);
+      setOpenText("");
       setCurrentIndex((prev) => prev - 1);
       setTimeout(() => setTransitioning(false), 400);
     }
@@ -224,7 +283,67 @@ export default function TestPage() {
     if (isLast) return "Последен въпрос!";
     if (currentIndex === questions.length - 2) return "Почти готово!";
     if (currentIndex === Math.floor(questions.length / 2)) return "На половината си!";
-    return `Въпрос ${currentIndex + 1} от ${questions.length}`;
+    return question.section || `Въпрос ${currentIndex + 1} от ${questions.length}`;
+  }
+
+  // ============================================================================
+  // GENDER STEP — shown before questions begin
+  // ============================================================================
+  if (!gender) {
+    return (
+      <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-12">
+        <div className="relative w-full max-w-md">
+          <div className="mb-6 text-center">
+            <Link href="/" className="font-serif text-lg font-semibold tracking-tight text-foreground">
+              <Logo />
+            </Link>
+          </div>
+
+          <motion.div
+            className="rounded-2xl border border-border/60 bg-card p-8 shadow-sm"
+            initial={{ opacity: 0, y: 16, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <p className="mb-2 text-center text-xs font-medium uppercase tracking-widest text-primary">
+              Преди да започнем
+            </p>
+            <h2 className="mb-2 text-center font-serif text-2xl font-semibold leading-tight sm:text-3xl">
+              Кажи ни малко за себе си
+            </h2>
+            <p className="mb-8 text-center text-sm text-muted-foreground">
+              За да създадем профила ти точно за теб.
+            </p>
+
+            <div className="space-y-3">
+              <motion.button
+                onClick={() => setGender("female")}
+                className="flex w-full items-center gap-4 rounded-xl border border-border/40 px-5 py-4 text-left transition-all hover:border-primary/40 hover:bg-primary/[0.03] hover:shadow-sm"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <span className="font-serif text-2xl">♀</span>
+                <span className="flex-1 font-medium">Жена</span>
+              </motion.button>
+
+              <motion.button
+                onClick={() => setGender("male")}
+                className="flex w-full items-center gap-4 rounded-xl border border-border/40 px-5 py-4 text-left transition-all hover:border-primary/40 hover:bg-primary/[0.03] hover:shadow-sm"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <span className="font-serif text-2xl">♂</span>
+                <span className="flex-1 font-medium">Мъж</span>
+              </motion.button>
+            </div>
+
+            <p className="mt-6 text-center text-xs text-muted-foreground/60">
+              25 въпроса &middot; около 10 минути
+            </p>
+          </motion.div>
+        </div>
+      </main>
+    );
   }
 
   if (showResume) {
@@ -333,7 +452,7 @@ export default function TestPage() {
                   {question.text}
                 </h2>
 
-                {/* Multiple choice options */}
+                {/* Single choice */}
                 {question.type === "choice" && (
                   <div className="space-y-2.5">
                     {question.options.map((option, i) => {
@@ -388,35 +507,60 @@ export default function TestPage() {
                   </div>
                 )}
 
-                {/* Open-ended question */}
-                {question.type === "open" && (
-                  <div className="space-y-4">
-                    <textarea
-                      value={openText}
-                      onChange={(e) => setOpenText(e.target.value)}
-                      placeholder={question.placeholder || "Напиши тук..."}
-                      className="w-full resize-none rounded-xl border border-border/40 bg-transparent px-4 py-3.5 text-base leading-relaxed placeholder:text-muted-foreground/40 focus:border-primary/40 focus:outline-none focus:ring-1 focus:ring-primary/20"
-                      rows={3}
-                      autoFocus
-                    />
-                    <motion.button
-                      onClick={(e) => {
-                        if (openText.trim().length > 0) {
-                          handleSelectAnswer(openText.trim(), e);
-                          setOpenText("");
-                        }
-                      }}
-                      disabled={openText.trim().length === 0}
-                      className="w-full rounded-full bg-primary px-6 py-3 text-sm font-medium text-white transition-all hover:bg-primary/90 disabled:opacity-40 disabled:hover:bg-primary"
-                      whileHover={{ scale: openText.trim().length > 0 ? 1.02 : 1 }}
-                      whileTap={{ scale: openText.trim().length > 0 ? 0.98 : 1 }}
-                    >
-                      {isLast ? "Готово" : "Продължи"}
-                    </motion.button>
+                {/* Multi-select (top N) */}
+                {question.type === "multi" && (
+                  <div className="space-y-2.5">
+                    {(() => {
+                      const selectedArr = Array.isArray(answers[question.id])
+                        ? (answers[question.id] as string[])
+                        : [];
+                      const remaining = question.selectCount - selectedArr.length;
+                      return (
+                        <p className="mb-2 text-center text-xs font-medium text-primary">
+                          {remaining > 0
+                            ? `Избери още ${remaining} ${remaining === 1 ? "опция" : "опции"}`
+                            : "Готово!"}
+                        </p>
+                      );
+                    })()}
+                    {question.options.map((option) => {
+                      const selectedArr = Array.isArray(answers[question.id])
+                        ? (answers[question.id] as string[])
+                        : [];
+                      const isSelected = selectedArr.includes(option.value);
+                      const order = isSelected ? selectedArr.indexOf(option.value) + 1 : null;
+
+                      return (
+                        <motion.button
+                          key={option.value}
+                          onClick={(e) => handleMultiToggle(option.value, e)}
+                          className={`relative flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 text-left text-base transition-all ${
+                            isSelected
+                              ? "border-primary bg-primary/10 text-foreground shadow-md shadow-primary/10"
+                              : "border-border/40 hover:border-primary/40 hover:bg-primary/[0.03] hover:shadow-sm"
+                          }`}
+                          transition={{ duration: 0.15 }}
+                          whileHover={{ scale: 1.02, x: 4 }}
+                          whileTap={{ scale: 0.97 }}
+                        >
+                          <span
+                            className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border-2 text-xs font-bold transition-colors ${
+                              isSelected
+                                ? "border-primary bg-primary text-white"
+                                : "border-muted-foreground/25 text-muted-foreground/50"
+                            }`}
+                          >
+                            {order ?? "+"}
+                          </span>
+
+                          <span className="flex-1 font-medium">{option.label}</span>
+                        </motion.button>
+                      );
+                    })}
                   </div>
                 )}
 
-                {/* Scale question */}
+                {/* Scale */}
                 {question.type === "scale" && (
                   <div className="space-y-2.5">
                     {Array.from({ length: question.max - question.min + 1 }, (_, i) => {
@@ -476,6 +620,29 @@ export default function TestPage() {
                         </motion.button>
                       );
                     })}
+                  </div>
+                )}
+
+                {/* Open question */}
+                {question.type === "open" && (
+                  <div className="space-y-4">
+                    <textarea
+                      value={openText}
+                      onChange={(e) => setOpenText(e.target.value)}
+                      placeholder={question.placeholder || "Напиши тук..."}
+                      className="w-full resize-none rounded-xl border border-border/40 bg-transparent px-4 py-3.5 text-base leading-relaxed placeholder:text-muted-foreground/40 focus:border-primary/40 focus:outline-none focus:ring-1 focus:ring-primary/20"
+                      rows={4}
+                      autoFocus
+                    />
+                    <motion.button
+                      onClick={handleOpenSubmit}
+                      disabled={openText.trim().length === 0}
+                      className="w-full rounded-full bg-primary px-6 py-3 text-sm font-medium text-white transition-all hover:bg-primary/90 disabled:opacity-40 disabled:hover:bg-primary"
+                      whileHover={{ scale: openText.trim().length > 0 ? 1.02 : 1 }}
+                      whileTap={{ scale: openText.trim().length > 0 ? 0.98 : 1 }}
+                    >
+                      {isLast ? "Готово" : "Продължи"}
+                    </motion.button>
                   </div>
                 )}
               </motion.div>

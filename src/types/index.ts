@@ -1,20 +1,31 @@
-// Question types for the Awareness Quiz
+// Question types for the Romantic Profile Test (Test 2)
 export interface ChoiceOption {
   label: string;
   value: string;
 }
 
-export interface MultipleChoiceQuestion {
+export interface SingleChoiceQuestion {
   id: string;
   text: string;
   type: "choice";
+  section?: string;
   options: ChoiceOption[];
+}
+
+export interface MultiChoiceQuestion {
+  id: string;
+  text: string;
+  type: "multi";
+  section?: string;
+  options: ChoiceOption[];
+  selectCount: number; // exactly N selections required
 }
 
 export interface ScaleQuestion {
   id: string;
   text: string;
   type: "scale";
+  section?: string;
   min: number;
   max: number;
   minLabel?: string;
@@ -25,20 +36,40 @@ export interface OpenQuestion {
   id: string;
   text: string;
   type: "open";
+  section?: string;
   placeholder?: string;
 }
 
-export type Question = MultipleChoiceQuestion | ScaleQuestion | OpenQuestion;
+export type Question =
+  | SingleChoiceQuestion
+  | MultiChoiceQuestion
+  | ScaleQuestion
+  | OpenQuestion;
 
-// Answers: question id → selected value (string for choice, number for scale)
-export type Answers = Record<string, string | number>;
+// Answers: question id → value
+// scale: number, choice: string, multi: string[], open: string
+export type AnswerValue = string | number | string[];
+export type Answers = Record<string, AnswerValue>;
 
-// Profile result
-export type ProfileType =
-  | "ready"
-  | "selective"
-  | "grounded"
-  | "emerging";
+// Gender for profile selection
+export type Gender = "male" | "female";
+
+// Profile types — 10 gender-variant archetypes from Test 2
+export type FemaleProfileType =
+  | "devoted_queen"
+  | "independent_spirit"
+  | "nurturing_soul"
+  | "ambitious_achiever"
+  | "thoughtful_introvert";
+
+export type MaleProfileType =
+  | "steady_protector"
+  | "visionary_leader"
+  | "thoughtful_partner"
+  | "passionate_romantic"
+  | "classic_gentleman";
+
+export type ProfileType = FemaleProfileType | MaleProfileType;
 
 export interface ProfileResult {
   type: ProfileType;
@@ -46,11 +77,14 @@ export interface ProfileResult {
   subtitle: string;
   description: string;
   emoji: string;
+  gender: Gender;
 }
 
 export interface User {
   id: string;
   email: string;
+  phone?: string | null;
+  gender?: Gender | null;
   status: "pending" | "contacted" | "approved" | "rejected";
   created_at: string;
 }

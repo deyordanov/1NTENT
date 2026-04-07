@@ -23,10 +23,10 @@ export async function GET(request: Request) {
   const status = searchParams.get("status");
   const search = searchParams.get("search");
 
-  // Fetch users
+  // Fetch users (explicit columns so missing ones don't break the query)
   let usersQuery = supabase
     .from("users")
-    .select("*")
+    .select("id, email, phone, gender, status, referral_code, referred_by, created_at")
     .order("created_at", { ascending: false });
 
   if (status && status !== "all") {
@@ -42,13 +42,31 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: usersError.message }, { status: 500 });
   }
 
-  // Fetch all test results
-  const { data: results } = await supabase
-    .from("test_results")
-    .select("*");
+  // Fetch all test results — try with profile_data first, gracefully fall back if column missing
+  let results: Array<{
+    user_id: string;
+    answers: unknown;
+    scores: unknown;
+    profile_data?: unknown;
+    profile_type?: string | null;
+    completed_at: string;
+  }> | null = null;
+  {
+    const withProfile = await supabase
+      .from("test_results")
+      .select("user_id, answers, scores, profile_data, profile_type, completed_at");
+    if (!withProfile.error) {
+      results = withProfile.data;
+    } else {
+      const fallback = await supabase
+        .from("test_results")
+        .select("user_id, answers, scores, profile_type, completed_at");
+      results = fallback.data;
+    }
+  }
 
   // Join results to users
-  const resultsByUser = new Map<string, typeof results extends (infer T)[] | null ? T : never>();
+  const resultsByUser = new Map<string, NonNullable<typeof results>[number]>();
   if (results) {
     for (const r of results) {
       resultsByUser.set(r.user_id, r);

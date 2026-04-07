@@ -6,14 +6,18 @@ import { UsersTable } from "@/components/admin/users-table";
 import { Logo } from "@/components/logo";
 
 interface TestResult {
-  scores: Record<string, string> | null;
-  answers: Record<string, string | number>;
+  scores: Record<string, number> | null; // radar scores (new) or legacy profile object
+  profile_data: Record<string, unknown> | null; // new profile field
+  profile_type: string | null;
+  answers: Record<string, string | number | string[]>;
   completed_at: string;
 }
 
 export interface AdminUser {
   id: string;
   email: string;
+  phone: string | null;
+  gender: string | null;
   status: string;
   referral_code: string | null;
   referred_by: string | null;

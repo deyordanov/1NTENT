@@ -1,11 +1,11 @@
 import { RadarScores, RadarDimension, radarLabels } from "@/lib/scoring";
 
 const dimensions: RadarDimension[] = [
-  "readiness",
-  "emotionalDepth",
-  "intentionality",
-  "stability",
-  "openness",
+  "attachmentSecurity",
+  "emotionalOpenness",
+  "loveExpression",
+  "lifeVisionAlignment",
+  "relationalMaturity",
 ];
 
 /**
